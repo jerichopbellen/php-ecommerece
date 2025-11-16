@@ -45,7 +45,6 @@ while ($row = mysqli_fetch_assoc($result)) {
 }
 mysqli_stmt_close($stmt);
 ?>
-
 <div class="container my-5">
     <?php include("../includes/alert.php"); ?>
     <div class="row g-4">
@@ -63,18 +62,21 @@ mysqli_stmt_close($stmt);
                         style="width:120px; height:120px; object-fit:cover;" 
                         alt="Profile Picture">
 
-                    <h4><?= htmlspecialchars($profile['first_name'], ENT_QUOTES, 'UTF-8') ?> <?=htmlspecialchars($profile['last_name'], ENT_QUOTES, 'UTF-8') ?></h4>
+                    <h4><?= htmlspecialchars($profile['first_name'], ENT_QUOTES, 'UTF-8') ?> <?= htmlspecialchars($profile['last_name'], ENT_QUOTES, 'UTF-8') ?></h4>
 
                     <!-- Upload Form -->
-                    <form method="POST" action="update_profile.php" enctype="multipart/form-data">
-                        <input type="file" name="avatar" class="form-control mb-2" accept="image/png, image/jpeg" required>
+                    <form method="POST" action="update_profile.php" enctype="multipart/form-data" novalidate>
+                        <small class="text-danger">
+                            <?php if(isset($_SESSION['imageError'])) { echo htmlspecialchars($_SESSION['imageError']); unset($_SESSION['imageError']); } ?>
+                        </small>
+                        <input type="file" name="avatar" class="form-control mb-2">
                         <button type="submit" name="submit_avatar" class="btn btn-outline-primary btn-sm w-100">
                             <i class="bi bi-upload me-1"></i> Upload New Image
                         </button>
                     </form>
 
                     <!-- Remove Form -->
-                    <form method="POST" action="update_profile.php" class="mt-2">
+                    <form method="POST" action="update_profile.php" class="mt-2" novalidate>
                         <button type="submit" name="remove_avatar" class="btn btn-outline-danger btn-sm w-100" onclick="return confirm('Remove your profile picture?');">
                             <i class="bi bi-trash me-1"></i> Remove Profile Picture
                         </button>

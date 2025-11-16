@@ -91,31 +91,40 @@ if (isset($_POST['submit_password'])) {
 }
 
 // Upload profile picture
-if (isset($_POST['submit_avatar']) && isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
-    $allowedTypes = ['image/png', 'image/jpg', 'image/jpeg'];
-    $file = $_FILES['avatar'];
+if (isset($_POST['submit_avatar'])) {
+    if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+        $allowedTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+        $file = $_FILES['avatar'];
 
-    if (in_array($file['type'], $allowedTypes)) {
-        $source = $file['tmp_name'];
-        // Sanitize filename
-        $filename = preg_replace('/[^a-zA-Z0-9._-]/', '', basename($file['name']));
-        $filename = uniqid() . '_' . $filename; // Add unique prefix to prevent overwrites
-        $target = __DIR__ . "/avatars/" . $filename;
-        $path = "/Furnitures/user/avatars/" . $filename;
+        if (in_array($file['type'], $allowedTypes)) {
+            $source = $file['tmp_name'];
+            // Sanitize filename
+            $filename = preg_replace('/[^a-zA-Z0-9._-]/', '', basename($file['name']));
+            $filename = uniqid('avatar_', true) . '_' . $filename; // unique prefix
+            $targetDir = __DIR__ . "/avatars/";
+            $target = $targetDir . $filename;
+            $path = "/Furnitures/user/avatars/" . $filename;
 
-        if (move_uploaded_file($source, $target)) {
-            $update_sql = "UPDATE users SET img_path = ? WHERE user_id = ?";
-            $stmt = mysqli_prepare($conn, $update_sql);
-            mysqli_stmt_bind_param($stmt, 'si', $path, $userId);
-            mysqli_stmt_execute($stmt);
-            mysqli_stmt_close($stmt);
+            if (!is_dir($targetDir)) {
+                mkdir($targetDir, 0755, true);
+            }
 
-            $_SESSION['success'] = 'Profile picture updated.';
+            if (move_uploaded_file($source, $target)) {
+                $update_sql = "UPDATE users SET img_path = ? WHERE user_id = ?";
+                $stmt = mysqli_prepare($conn, $update_sql);
+                mysqli_stmt_bind_param($stmt, 'si', $path, $userId);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+
+                $_SESSION['success'] = 'Profile picture updated.';
+            } else {
+                $_SESSION['imageError'] = "Couldn't save uploaded image.";
+            }
         } else {
-            $_SESSION['error'] = "Couldn't save uploaded image.";
+            $_SESSION['imageError'] = 'Invalid image type. Only PNG and JPG are allowed.';
         }
     } else {
-        $_SESSION['error'] = 'Invalid image type. Only PNG and JPG are allowed.';
+        $_SESSION['imageError'] = 'No file uploaded.';
     }
 
     header("Location: profile.php");

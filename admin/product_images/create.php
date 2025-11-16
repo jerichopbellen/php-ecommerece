@@ -52,7 +52,7 @@ $result = mysqli_stmt_get_result($stmt);
                     <?php include '../../includes/alert.php'; ?>
                     <h4 class="card-title mb-4"><i class="bi bi-image me-2"></i>Upload Product Image</h4>
 
-                    <form method="POST" action="store.php" enctype="multipart/form-data" novalidate>
+                    <form method="POST" action="store.php" enctype="multipart/form-data">
                         <!-- Product -->
                         <div class="mb-3">
                             <label for="product" class="form-label">Product Name</label>

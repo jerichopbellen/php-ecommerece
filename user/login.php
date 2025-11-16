@@ -12,10 +12,19 @@ if (isset($_POST['submit'])) {
     // Input sanitization
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
     $email = filter_var($email, FILTER_VALIDATE_EMAIL);
-    $pass = sha1(trim($_POST['password']));
+    $pass  = sha1(trim($_POST['password']));
+
+    // Persist values in session for repopulation
+    $_SESSION['email_input'] = $_POST['email'];
 
     if (!$email) {
-        $_SESSION['flash'] = 'Invalid email format';
+        $_SESSION['flash'] = 'Please enter a valid email address.';
+        header("Location: login.php");
+        exit();
+    }
+
+    if (empty($_POST['password'])) {
+        $_SESSION['flash'] = 'Password cannot be empty.';
         header("Location: login.php");
         exit();
     }
@@ -52,13 +61,16 @@ if (isset($_POST['submit'])) {
             }
 
             // Allow login
-            $_SESSION['email'] = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
+            $_SESSION['email']   = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
             $_SESSION['user_id'] = (int)$user_id;
-            $_SESSION['role'] = $role;
+            $_SESSION['role']    = $role;
             
             mysqli_stmt_close($stmt);
             mysqli_commit($conn);
-            
+
+            // Clear persisted input
+            unset($_SESSION['email_input']);
+
             header("Location: ../index.php");
             exit();
         } else {
@@ -79,8 +91,8 @@ if (isset($_POST['submit'])) {
 }
 
 include("../includes/alert.php");
-
 ?>
+
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
@@ -88,15 +100,18 @@ include("../includes/alert.php");
                 <div class="card-body">
                     
                     <h4 class="text-center mb-4"><i class="bi bi-person-circle me-2"></i>Login to Your Account</h4>
-                    <form action="<?=htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="POST">
+                    <form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="POST">
                         <div class="mb-3">
                             <label for="form2Example1" class="form-label">Email address</label>
-                            <input type="email" id="form2Example1" class="form-control" name="email" required>
+                            <small class="text-danger">
+                            </small>
+                            <input type="text" id="form2Example1" class="form-control" name="email"
+                                   value="<?php if(isset($_SESSION['email_input'])) { echo htmlspecialchars($_SESSION['email_input']); } ?>">
                         </div>
 
                         <div class="mb-3">
                             <label for="form2Example2" class="form-label">Password</label>
-                            <input type="password" id="form2Example2" class="form-control" name="password" required>
+                            <input type="password" id="form2Example2" class="form-control" name="password">
                         </div>
 
                         <button type="submit" class="btn btn-outline-primary w-100" name="submit">
@@ -112,6 +127,7 @@ include("../includes/alert.php");
         </div>
     </div>
 </div>
+
 <?php
 include("../includes/footer.php");
 ?>

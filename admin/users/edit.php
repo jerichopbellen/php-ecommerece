@@ -89,7 +89,7 @@ if (!$user) {
 
                         <div class="mb-4">
                             <label for="role" class="form-label">Role</label>
-                            <select class="form-select" id="role" name="role" required>
+                            <select class="form-select" id="role" name="role">
                                 <option value="admin" <?=$user['role'] === 'admin' ? 'selected' : '' ?>>Admin</option>
                                 <option value="customer" <?=$user['role'] === 'customer' ? 'selected' : '' ?>>Customer</option>
                             </select>

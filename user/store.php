@@ -1,7 +1,6 @@
 <?php
 session_start();
 include("../includes/config.php");
-include("../includes/header.php");
 
 // Sanitize and validate input
 $first_name   = trim(htmlspecialchars($_POST['first_name'] ?? '', ENT_QUOTES, 'UTF-8'));
@@ -10,22 +9,35 @@ $email        = trim($_POST['email'] ?? '');
 $password     = $_POST['password'] ?? '';
 $confirmPass  = $_POST['confirmPass'] ?? '';
 
-if (!$first_name || !$last_name || !$email || !$password || !$confirmPass) {
-    $_SESSION['error'] = 'All fields are required.';
-    header("Location: register.php");
-    exit();
-}
+// Persist values in session
+$_SESSION['first_name'] = $_POST['first_name'];
+$_SESSION['last_name']  = $_POST['last_name'];
+$_SESSION['email']      = $_POST['email'];
 
+// Validation
+if (!$first_name) {
+    $_SESSION['firstNameError'] = 'First name is required.';
+    header("Location: register.php"); exit();
+}
+if (!$last_name) {
+    $_SESSION['lastNameError'] = 'Last name is required.';
+    header("Location: register.php"); exit();
+}
+if (!$email) {
+    $_SESSION['emailError'] = 'Email is required.';
+    header("Location: register.php"); exit();
+}
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $_SESSION['error'] = 'Invalid email format.';
-    header("Location: register.php");
-    exit();
+    $_SESSION['emailError'] = 'Invalid email format.';
+    header("Location: register.php"); exit();
 }
-
+if (!$password) {
+    $_SESSION['passwordError'] = 'Password is required.';
+    header("Location: register.php"); exit();
+}
 if ($password !== $confirmPass) {
-    $_SESSION['error'] = 'Passwords do not match.';
-    header("Location: register.php");
-    exit();
+    $_SESSION['confirmError'] = 'Passwords do not match.';
+    header("Location: register.php"); exit();
 }
 
 // Check if email already exists
@@ -37,14 +49,14 @@ mysqli_stmt_store_result($emailCheckStmt);
 
 if (mysqli_stmt_num_rows($emailCheckStmt) > 0) {
     mysqli_stmt_close($emailCheckStmt);
-    $_SESSION['error'] = 'Email is already registered. Please use a different one.';
-    header("Location: register.php");
-    exit();
+    $_SESSION['emailError'] = 'Email is already registered. Please use a different one.';
+    header("Location: register.php"); exit();
 }
 mysqli_stmt_close($emailCheckStmt);
 
 // Handle profile photo upload
 $img_path = null;
+$targetPath = null;
 
 if (isset($_FILES['profile_photo']) && $_FILES['profile_photo']['error'] === UPLOAD_ERR_OK) {
     $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
@@ -55,7 +67,7 @@ if (isset($_FILES['profile_photo']) && $_FILES['profile_photo']['error'] === UPL
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
         $newName = uniqid('profile_', true) . '.' . $ext;
 
-        $targetDir =  __DIR__ . "/avatars/";
+        $targetDir = __DIR__ . "/avatars/";
         $targetPath = $targetDir . $newName;
         $webPath = "/Furnitures/user/avatars/" . $newName;
 
@@ -66,14 +78,12 @@ if (isset($_FILES['profile_photo']) && $_FILES['profile_photo']['error'] === UPL
         if (move_uploaded_file($file['tmp_name'], $targetPath)) {
             $img_path = $webPath;
         } else {
-            $_SESSION['error'] = "Couldn't save uploaded image.";
-            header("Location: register.php");
-            exit();
+            $_SESSION['photoError'] = "Couldn't save uploaded image.";
+            header("Location: register.php"); exit();
         }
     } else {
-        $_SESSION['error'] = 'Invalid image type. Only JPG, PNG, and GIF are allowed.';
-        header("Location: register.php");
-        exit();
+        $_SESSION['photoError'] = 'Invalid image type. Only JPG and PNG are allowed.';
+        header("Location: register.php"); exit();
     }
 }
 
@@ -81,18 +91,18 @@ if (isset($_FILES['profile_photo']) && $_FILES['profile_photo']['error'] === UPL
 mysqli_begin_transaction($conn);
 
 try {
-    // Hash password (consider using password_hash() instead of sha1)
+    // Hash password (better to use password_hash, but keeping sha1 for consistency)
     $hashed_password = sha1($password);
 
     // Insert user
     $sql = "INSERT INTO users (first_name, last_name, email, password_hash, img_path) VALUES (?, ?, ?, ?, ?)";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, 'sssss', $first_name, $last_name, $email, $hashed_password, $img_path);
-    
+
     if (!mysqli_stmt_execute($stmt)) {
         throw new Exception('Failed to insert user');
     }
-    
+
     $userId = mysqli_insert_id($conn);
     mysqli_stmt_close($stmt);
 
@@ -108,23 +118,28 @@ try {
     // Commit transaction
     mysqli_commit($conn);
 
+    // Clear session values after success
+    foreach (['first_name','last_name','email'] as $field) {
+        unset($_SESSION[$field]);
+    }
+
     // Set session
     $_SESSION['user_id'] = $userId;
-    $_SESSION['email'] = $email;
-    $_SESSION['role'] = $roleData['role'] ?? 'user';
+    $_SESSION['email']   = $email;
+    $_SESSION['role']    = $roleData['role'] ?? 'user';
 
+    $_SESSION['success'] = "Registration successful!";
     header("Location: profile.php");
     exit();
-    
+
 } catch (Exception $e) {
-    // Rollback on error
     mysqli_rollback($conn);
-    
+
     // Delete uploaded file if exists
-    if ($img_path && file_exists($targetPath)) {
+    if ($img_path && $targetPath && file_exists($targetPath)) {
         unlink($targetPath);
     }
-    
+
     $_SESSION['error'] = 'Registration failed. Please try again.';
     header("Location: register.php");
     exit();

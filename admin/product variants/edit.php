@@ -86,7 +86,7 @@ if (!$product_variant) {
           <h4 class="card-title mb-4">
             <i class="bi bi-palette me-2 text-dark"></i>Edit Product Variant
           </h4>
-          <form action="update.php" method="POST" novalidate>
+          <form action="update.php" method="POST">
             <input type="hidden" name="variant_id" value="<?= htmlspecialchars($product_variant['variant_id']) ?>">
 
             <div class="mb-3">

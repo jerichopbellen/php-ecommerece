@@ -83,7 +83,7 @@ if (!$image) {
           <h4 class="card-title mb-4">
             <i class="bi bi-image me-2 text-dark"></i>Edit Product Image
           </h4>
-          <form method="POST" enctype="multipart/form-data" action="update.php" novalidate>
+          <form method="POST" enctype="multipart/form-data" action="update.php">
             <input type="hidden" name="image_id" value="<?= htmlspecialchars($image['image_id']) ?>">
             <input type="hidden" name="existingImage" value="<?= htmlspecialchars($image['img_path']) ?>">
 
