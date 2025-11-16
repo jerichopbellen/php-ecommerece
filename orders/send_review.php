@@ -45,15 +45,15 @@ mysqli_begin_transaction($conn);
 try {
     // Verify user owns this order
     $verify_stmt = mysqli_prepare($conn, "
-        SELECT id FROM orders 
-        WHERE id = ? AND user_id = ? AND order_status = 'Completed'
+        SELECT order_id FROM orders 
+        WHERE order_id = ? AND user_id = ? AND status = 'Received'
     ");
     mysqli_stmt_bind_param($verify_stmt, "ii", $order_id, $user_id);
     mysqli_stmt_execute($verify_stmt);
     $verify_result = mysqli_stmt_get_result($verify_stmt);
     
     if (mysqli_num_rows($verify_result) === 0) {
-        throw new Exception("Invalid order or order not completed.");
+        throw new Exception("Invalid order or order not received.");
     }
     mysqli_stmt_close($verify_stmt);
 

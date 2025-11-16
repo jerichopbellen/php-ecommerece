@@ -131,4 +131,23 @@ body{
     
     }
     
+    .carousel-item img {
+        cursor: pointer;
+    }
     
+    #imageModal .modal-dialog {
+        max-width: 90vw;
+        margin: 1.75rem auto;
+    }
+    
+    #imageModal .modal-body {
+        padding: 0;
+        position: relative;
+    }
+    
+    #imageModal img {
+        width: 100%;
+        height: auto;
+        max-height: 85vh;
+        object-fit: contain;
+    }

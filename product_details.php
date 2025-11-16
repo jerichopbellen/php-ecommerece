@@ -132,29 +132,6 @@ try {
 }
 ?>
 
-<style>
-    .carousel-item img {
-        cursor: pointer;
-    }
-    
-    #imageModal .modal-dialog {
-        max-width: 90vw;
-        margin: 1.75rem auto;
-    }
-    
-    #imageModal .modal-body {
-        padding: 0;
-        position: relative;
-    }
-    
-    #imageModal img {
-        width: 100%;
-        height: auto;
-        max-height: 85vh;
-        object-fit: contain;
-    }
-</style>
-
 <div class="container my-5">
     <div class="card shadow-sm mb-4">
         <div class="card-body">
@@ -226,14 +203,16 @@ try {
                     <label for="variant" class="form-label">Choose Variant:</label>
                     <select name="variant_id" id="variant" class="form-select mb-3" form="addToCartForm" required>
                         <?php foreach ($variants as $v): ?>
-                            <option value="<?= (int)$v['variant_id'] ?>" <?=$v['quantity'] <= 0 ? 'disabled' : '' ?>></option>
-                                <?=htmlspecialchars("{$v['color']} / {$v['material']}") ?> - ₱<?=number_format((float)$v['price'], 2) ?> (<?= $v['quantity'] > 0 ? (int)$v['quantity'] . ' in stock' : 'Out of stock' ?>)
+                            <option value="<?= (int)$v['variant_id'] ?>" <?=$v['quantity'] <= 0 ? 'disabled' : '' ?>>
+                                <?=htmlspecialchars("{$v['color']} / {$v['material']}") ?> 
+                                - ₱<?=number_format((float)$v['price'], 2) ?> 
+                                (<?= $v['quantity'] > 0 ? (int)$v['quantity'] . ' in stock' : 'Out of stock' ?>)
                             </option>
                         <?php endforeach; ?>
                     </select>
 
                     <div class="d-flex gap-2">
-                        <form id="addToCartForm" method="POST" action="./cart/add_to_cart.php"></form>
+                        <form id="addToCartForm" method="POST" action="./cart/add_to_cart.php">
                             <input type="hidden" name="product_id" value="<?=(int)$product_id ?>">
                             <input type="hidden" name="action" value="add">
                             <button type="submit" name="submit" class="btn btn-outline-primary">
