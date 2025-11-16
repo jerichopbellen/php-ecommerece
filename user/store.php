@@ -11,19 +11,19 @@ $password     = $_POST['password'] ?? '';
 $confirmPass  = $_POST['confirmPass'] ?? '';
 
 if (!$first_name || !$last_name || !$email || !$password || !$confirmPass) {
-    $_SESSION['message'] = 'All fields are required.';
+    $_SESSION['error'] = 'All fields are required.';
     header("Location: register.php");
     exit();
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $_SESSION['message'] = 'Invalid email format.';
+    $_SESSION['error'] = 'Invalid email format.';
     header("Location: register.php");
     exit();
 }
 
 if ($password !== $confirmPass) {
-    $_SESSION['message'] = 'Passwords do not match.';
+    $_SESSION['error'] = 'Passwords do not match.';
     header("Location: register.php");
     exit();
 }
@@ -37,7 +37,7 @@ mysqli_stmt_store_result($emailCheckStmt);
 
 if (mysqli_stmt_num_rows($emailCheckStmt) > 0) {
     mysqli_stmt_close($emailCheckStmt);
-    $_SESSION['message'] = 'Email is already registered. Please use a different one.';
+    $_SESSION['error'] = 'Email is already registered. Please use a different one.';
     header("Location: register.php");
     exit();
 }
@@ -66,12 +66,12 @@ if (isset($_FILES['profile_photo']) && $_FILES['profile_photo']['error'] === UPL
         if (move_uploaded_file($file['tmp_name'], $targetPath)) {
             $img_path = $webPath;
         } else {
-            $_SESSION['message'] = "Couldn't save uploaded image.";
+            $_SESSION['error'] = "Couldn't save uploaded image.";
             header("Location: register.php");
             exit();
         }
     } else {
-        $_SESSION['message'] = 'Invalid image type. Only JPG, PNG, and GIF are allowed.';
+        $_SESSION['error'] = 'Invalid image type. Only JPG, PNG, and GIF are allowed.';
         header("Location: register.php");
         exit();
     }
@@ -125,7 +125,7 @@ try {
         unlink($targetPath);
     }
     
-    $_SESSION['message'] = 'Registration failed. Please try again.';
+    $_SESSION['error'] = 'Registration failed. Please try again.';
     header("Location: register.php");
     exit();
 }
