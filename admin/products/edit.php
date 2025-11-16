@@ -110,19 +110,22 @@ if (!empty($product['dimension']) && preg_match('/(\d+(\.\d+)?)\s*x\s*(\d+(\.\d+
                         <!-- Product Name -->
                         <div class="mb-3">
                             <label for="productName" class="form-label">Product Name</label>
-                            <input type="text" class="form-control" id="productName" name="productName" value="<?= htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8') ?>" required>
+                            <small class="text-danger"><?php if (isset($_SESSION['nameError'])) { echo $_SESSION['nameError']; unset($_SESSION['nameError']); } ?></small>
+                            <input type="text" class="form-control" id="productName" name="productName" value="<?=htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8') ?>">
                         </div>
 
                         <!-- Description -->
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
-                            <input type="text" class="form-control" id="description" name="description" value="<?= htmlspecialchars($product['description'], ENT_QUOTES, 'UTF-8') ?>" required>
+                                    <small class="text-danger"><?php if (isset($_SESSION['descriptionError'])) { echo $_SESSION['descriptionError']; unset($_SESSION['descriptionError']); } ?></small>
+                            <input type="text" class="form-control" id="description" name="description" value="<?= htmlspecialchars($product['description'], ENT_QUOTES, 'UTF-8') ?>">
                         </div>
 
                         <!-- Brand -->
                         <div class="mb-3">
                             <label for="brand" class="form-label">Brand</label>
-                            <select class="form-select" id="brand" name="brand_id" required>
+                            <small class="text-danger"><?php if (isset($_SESSION['brandError'])) { echo $_SESSION['brandError']; unset($_SESSION['brandError']); } ?></small>
+                            <select class="form-select" id="brand" name="brand_id" >
                                 <option value="<?= htmlspecialchars($product['brand_id'], ENT_QUOTES, 'UTF-8') ?>" selected><?= htmlspecialchars($product['brand_name'], ENT_QUOTES, 'UTF-8') ?></option>
                                 <?php while ($row = mysqli_fetch_assoc($brands)) : ?>
                                     <option value="<?= htmlspecialchars($row['brand_id'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8') ?></option>
@@ -133,7 +136,8 @@ if (!empty($product['dimension']) && preg_match('/(\d+(\.\d+)?)\s*x\s*(\d+(\.\d+
                         <!-- Category -->
                         <div class="mb-3">
                             <label for="category" class="form-label">Category</label>
-                            <select class="form-select" id="category" name="category_id" required>
+                            <small class="text-danger"><?php if (isset($_SESSION['categoryError'])) { echo $_SESSION['categoryError']; unset($_SESSION['categoryError']); } ?></small>
+                            <select class="form-select" id="category" name="category_id">
                                 <option value="<?= htmlspecialchars($product['category_id'], ENT_QUOTES, 'UTF-8') ?>" selected><?= htmlspecialchars($product['category_name'], ENT_QUOTES, 'UTF-8') ?></option>
                                 <?php while ($row = mysqli_fetch_assoc($categories)) : ?>
                                     <option value="<?= htmlspecialchars($row['category_id'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8') ?></option>
@@ -144,15 +148,16 @@ if (!empty($product['dimension']) && preg_match('/(\d+(\.\d+)?)\s*x\s*(\d+(\.\d+
                         <!-- Dimensions -->
                         <div class="mb-3">
                             <label class="form-label">Dimensions (cm)</label>
+                            <small class="text-danger"><?php if (isset($_SESSION['dimensionError'])) { echo $_SESSION['dimensionError']; unset($_SESSION['dimensionError']); } ?></small>
                             <div class="row g-2">
                                 <div class="col-md-4">
-                                    <input type="number" step="0.01" class="form-control" name="length" placeholder="Length" value="<?= htmlspecialchars($length, ENT_QUOTES, 'UTF-8') ?>" required>
+                                    <input type="number" step="0.01" class="form-control" name="length" placeholder="Length" value="<?= htmlspecialchars($length, ENT_QUOTES, 'UTF-8') ?>" >
                                 </div>
                                 <div class="col-md-4">
-                                    <input type="number" step="0.01" class="form-control" name="width" placeholder="Width" value="<?= htmlspecialchars($width, ENT_QUOTES, 'UTF-8') ?>" required>
+                                    <input type="number" step="0.01" class="form-control" name="width" placeholder="Width" value="<?= htmlspecialchars($width, ENT_QUOTES, 'UTF-8') ?>" >
                                 </div>
                                 <div class="col-md-4">
-                                    <input type="number" step="0.01" class="form-control" name="height" placeholder="Height" value="<?= htmlspecialchars($height, ENT_QUOTES, 'UTF-8') ?>" required>
+                                    <input type="number" step="0.01" class="form-control" name="height" placeholder="Height" value="<?= htmlspecialchars($height, ENT_QUOTES, 'UTF-8') ?>" >
                                 </div>
                             </div>
                         </div>

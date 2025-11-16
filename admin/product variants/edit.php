@@ -68,58 +68,84 @@ if (!$product_variant) {
 }
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Product Variant</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
 <div class="container my-5">
   <div class="row justify-content-center">
-  <div class="col-lg-6">
-    <div class="card shadow-sm">
-    <div class="card-body">
-      <?php include '../../includes/alert.php'; ?>
-      <h4 class="card-title mb-4">
-      <i class="bi bi-palette me-2 text-dark"></i>Edit Product Variant
-      </h4>
-      <form action="update.php" method="POST">
-      <input type="hidden" name="variant_id" value="<?=htmlspecialchars($product_variant['variant_id']) ?>">
+    <div class="col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <?php include '../../includes/alert.php'; ?>
+          <h4 class="card-title mb-4">
+            <i class="bi bi-palette me-2 text-dark"></i>Edit Product Variant
+          </h4>
+          <form action="update.php" method="POST" novalidate>
+            <input type="hidden" name="variant_id" value="<?= htmlspecialchars($product_variant['variant_id']) ?>">
 
-      <div class="mb-3">
-        <label for="product" class="form-label">Product Name</label>
-        <select class="form-select" id="product" name="product_id" disabled>
-        <option value="<?= htmlspecialchars($product_variant['product_id']) ?>" selected><?= htmlspecialchars($product_variant['product_name']) ?></option>
-        </select>
-      </div>
+            <div class="mb-3">
+              <label for="product" class="form-label">Product Name</label>
+              <select class="form-select" id="product" name="product_id" disabled>
+                <option value="<?= htmlspecialchars($product_variant['product_id']) ?>" selected>
+                  <?= htmlspecialchars($product_variant['product_name']) ?>
+                </option>
+              </select>
+            </div>
 
-      <div class="mb-3">
-        <label for="color" class="form-label">Color</label>
-        <input type="text" class="form-control" id="color" name="color" value="<?= htmlspecialchars($product_variant['color']) ?>">
-      </div>
+            <div class="mb-3">
+              <label for="color" class="form-label">Color</label>
+              <small class="text-danger">
+                <?php if(isset($_SESSION['variantError'])) { echo htmlspecialchars($_SESSION['variantError']); unset($_SESSION['variantError']); } ?>
+              </small>
+              <input type="text" class="form-control" id="color" name="color"
+                     value="<?= isset($_SESSION['color']) ? htmlspecialchars($_SESSION['color']) : htmlspecialchars($product_variant['color']) ?>">
+            </div>
 
-      <div class="mb-3">
-        <label for="material" class="form-label">Material</label>
-        <input type="text" class="form-control" id="material" name="material" value="<?= htmlspecialchars($product_variant['material']) ?>">
-      </div>
+            <div class="mb-3">
+              <label for="material" class="form-label">Material</label>
+              <input type="text" class="form-control" id="material" name="material"
+                     value="<?= isset($_SESSION['material']) ? htmlspecialchars($_SESSION['material']) : htmlspecialchars($product_variant['material']) ?>">
+            </div>
 
-      <div class="mb-3">
-        <label for="sell_price" class="form-label">Sell Price</label>
-        <input type="text" class="form-control" id="sell_price" name="sell_price" value="<?= htmlspecialchars($product_variant['price']) ?>" required>
-      </div>
+            <div class="mb-3">
+              <label for="sell_price" class="form-label">Sell Price</label>
+              <small class="text-danger">
+                <?php if(isset($_SESSION['priceError'])) { echo htmlspecialchars($_SESSION['priceError']); unset($_SESSION['priceError']); } ?>
+              </small>
+              <input type="text" class="form-control" id="sell_price" name="sell_price"
+                     value="<?= isset($_SESSION['sell_price']) ? htmlspecialchars($_SESSION['sell_price']) : htmlspecialchars($product_variant['price']) ?>">
+            </div>
 
-      <div class="mb-3">
-        <label for="quantity" class="form-label">Quantity</label>
-        <input type="number" class="form-control" id="quantity" name="quantity" value="<?= htmlspecialchars($product_variant['quantity']) ?>" required>
-      </div>
+            <div class="mb-3">
+              <label for="quantity" class="form-label">Quantity</label>
+              <small class="text-danger">
+                <?php if(isset($_SESSION['quantityError'])) { echo htmlspecialchars($_SESSION['quantityError']); unset($_SESSION['quantityError']); } ?>
+              </small>
+              <input type="text" class="form-control" id="quantity" name="quantity"
+                     value="<?= isset($_SESSION['quantity']) ? htmlspecialchars($_SESSION['quantity']) : htmlspecialchars($product_variant['quantity']) ?>">
+            </div>
 
-      <div class="d-flex justify-content-between">
-        <button type="submit" class="btn btn-primary" name="submit" value="submit">
-        <i class="bi bi-check-circle me-1"></i>Update
-        </button>
-        <a href="index.php" class="btn btn-secondary">
-        <i class="bi bi-x-circle me-1"></i>Cancel
-        </a>
+            <div class="d-flex justify-content-between">
+              <button type="submit" class="btn btn-primary" name="submit" value="submit">
+                <i class="bi bi-check-circle me-1"></i>Update
+              </button>
+              <a href="index.php" class="btn btn-secondary">
+                <i class="bi bi-x-circle me-1"></i>Cancel
+              </a>
+            </div>
+          </form>
+        </div>
       </div>
-      </form>
     </div>
-    </div>
-  </div>
   </div>
 </div>
 
 <?php include '../../includes/footer.php'; ?>
+</body>
+</html>

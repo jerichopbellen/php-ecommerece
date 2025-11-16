@@ -29,11 +29,20 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Use prepared statement for fetching products
+// Fetch products
 $stmt = mysqli_prepare($conn, "SELECT product_id, name FROM products ORDER BY name ASC");
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Product Variant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
 
 <div class="container my-5">
     <div class="row justify-content-center">
@@ -41,40 +50,63 @@ $result = mysqli_stmt_get_result($stmt);
             <div class="card shadow-sm">
                 <div class="card-body">
                     <?php include '../../includes/alert.php'; ?>
-                   <h4 class="card-title mb-4"><i class="bi bi-sliders me-2"></i>Create Product Variant</h4>
+                    <h4 class="card-title mb-4"><i class="bi bi-sliders me-2"></i>Create Product Variant</h4>
+
                     <form method="POST" action="store.php" enctype="multipart/form-data">
+                        <!-- Product -->
                         <div class="mb-3">
                             <label for="product" class="form-label">Product Name</label>
-                            <select class="form-select" id="product" name="product" required>
-                                <option value="" disabled selected>Select Product</option>
+                            <small class="text-danger">
+                                <?php if(isset($_SESSION['productError'])) { echo htmlspecialchars($_SESSION['productError'], ENT_QUOTES, 'UTF-8'); unset($_SESSION['productError']); } ?>
+                            </small>
+                            <select class="form-select" id="product" name="product">
+                                <option value="" disabled <?= !isset($_SESSION['product']) ? 'selected' : '' ?>>Select Product</option>
                                 <?php while ($row = mysqli_fetch_assoc($result)) : ?>
-                                    <option value="<?=htmlspecialchars($row['product_id'], ENT_QUOTES, 'UTF-8') ?>">
+                                    <option value="<?= htmlspecialchars($row['product_id'], ENT_QUOTES, 'UTF-8') ?>"
+                                        <?= isset($_SESSION['product']) && $_SESSION['product'] == $row['product_id'] ? 'selected' : '' ?>>
                                         <?= htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8') ?>
                                     </option>
                                 <?php endwhile; ?>
                             </select>
                         </div>
 
+                        <!-- Color / Material -->
+                        <small class="text-danger">
+                            <?php if(isset($_SESSION['variantError'])) { echo htmlspecialchars($_SESSION['variantError'], ENT_QUOTES, 'UTF-8'); unset($_SESSION['variantError']); } ?>
+                        </small>
                         <div class="mb-3">
                             <label for="color" class="form-label">Color</label>
-                            <input type="text" class="form-control" id="color" name="color" placeholder="Enter color">
+                            <input type="text" class="form-control" id="color" name="color" placeholder="Enter color"
+                                   value="<?php if(isset($_SESSION['color'])) { echo htmlspecialchars($_SESSION['color'], ENT_QUOTES, 'UTF-8'); unset($_SESSION['color']); } ?>">
                         </div>
 
                         <div class="mb-3">
                             <label for="material" class="form-label">Material</label>
-                            <input type="text" class="form-control" id="material" name="material" placeholder="Enter material">
+                            <input type="text" class="form-control" id="material" name="material" placeholder="Enter material"
+                                   value="<?php if(isset($_SESSION['material'])) { echo htmlspecialchars($_SESSION['material'], ENT_QUOTES, 'UTF-8'); unset($_SESSION['material']); } ?>">
                         </div>
 
+                        <!-- Price -->
                         <div class="mb-3">
                             <label for="price" class="form-label">Sell Price</label>
-                            <input type="number" step="0.01" min="0" class="form-control" id="price" name="price" placeholder="Enter price" required>
+                            <small class="text-danger">
+                                <?php if(isset($_SESSION['priceError'])) { echo htmlspecialchars($_SESSION['priceError'], ENT_QUOTES, 'UTF-8'); unset($_SESSION['priceError']); } ?>
+                            </small>
+                            <input type="text" class="form-control" id="price" name="price" placeholder="Enter price"
+                                   value="<?php if(isset($_SESSION['price'])) { echo htmlspecialchars($_SESSION['price'], ENT_QUOTES, 'UTF-8'); unset($_SESSION['price']); } ?>">
                         </div>
 
+                        <!-- Quantity -->
                         <div class="mb-4">
                             <label for="quantity" class="form-label">Stock Quantity</label>
-                            <input type="number" min="0" class="form-control" id="quantity" name="quantity" placeholder="Enter quantity" required>
+                            <small class="text-danger">
+                                <?php if(isset($_SESSION['quantityError'])) { echo htmlspecialchars($_SESSION['quantityError'], ENT_QUOTES, 'UTF-8'); unset($_SESSION['quantityError']); } ?>
+                            </small>
+                            <input type="text" class="form-control" id="quantity" name="quantity" placeholder="Enter quantity"
+                                   value="<?php if(isset($_SESSION['quantity'])) { echo htmlspecialchars($_SESSION['quantity'], ENT_QUOTES, 'UTF-8'); unset($_SESSION['quantity']); } ?>">
                         </div>
 
+                        <!-- Actions -->
                         <div class="d-flex justify-content-between">
                             <button type="submit" class="btn btn-primary" name="submit" value="submit">
                                 <i class="bi bi-check-circle me-1"></i>Submit
@@ -90,7 +122,7 @@ $result = mysqli_stmt_get_result($stmt);
     </div>
 </div>
 
-<?php 
+<?php
 mysqli_stmt_close($stmt);
-include '../../includes/footer.php'; 
+include '../../includes/footer.php';
 ?>

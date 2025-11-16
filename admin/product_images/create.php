@@ -29,11 +29,20 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Use prepared statement to fetch products
+// Fetch products
 $stmt = mysqli_prepare($conn, "SELECT product_id, name FROM products ORDER BY name ASC");
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Product Image</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
 
 <div class="container my-5">
     <div class="row justify-content-center">
@@ -42,27 +51,45 @@ $result = mysqli_stmt_get_result($stmt);
                 <div class="card-body">
                     <?php include '../../includes/alert.php'; ?>
                     <h4 class="card-title mb-4"><i class="bi bi-image me-2"></i>Upload Product Image</h4>
-                    <form method="POST" action="store.php" enctype="multipart/form-data">
+
+                    <form method="POST" action="store.php" enctype="multipart/form-data" novalidate>
+                        <!-- Product -->
                         <div class="mb-3">
                             <label for="product" class="form-label">Product Name</label>
-                            <select class="form-select" id="product" name="product" required>
-                                <option value="" disabled selected>Select Product</option>
+                            <small class="text-danger">
+                                <?php if(isset($_SESSION['productError'])) { echo htmlspecialchars($_SESSION['productError']); unset($_SESSION['productError']); } ?>
+                            </small>
+                            <select class="form-select" id="product" name="product">
+                                <option value="" disabled <?= !isset($_SESSION['product']) ? 'selected' : '' ?>>Select Product</option>
                                 <?php while ($row = mysqli_fetch_assoc($result)) : ?>
-                                    <option value="<?= intval($row['product_id']) ?>"><?= htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8') ?></option>
+                                    <option value="<?= intval($row['product_id']) ?>"
+                                        <?= isset($_SESSION['product']) && $_SESSION['product'] == $row['product_id'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8') ?>
+                                    </option>
                                 <?php endwhile; ?>
                             </select>
                         </div>
 
+                        <!-- Image -->
                         <div class="mb-3">
                             <label for="image" class="form-label">Image File</label>
-                            <input class="form-control" type="file" name="img_path" accept="image/*" required>
+                            <small class="text-danger">
+                                <?php if(isset($_SESSION['imageError'])) { echo htmlspecialchars($_SESSION['imageError']); unset($_SESSION['imageError']); } ?>
+                            </small>
+                            <input class="form-control" type="file" name="img_path">
                         </div>
 
+                        <!-- Alt Text -->
                         <div class="mb-3">
                             <label for="alt-text" class="form-label">Alt Text</label>
-                            <input type="text" class="form-control" id="alt-text" name="alt-text" placeholder="Enter alt text" required>
+                            <small class="text-danger">
+                                <?php if(isset($_SESSION['altError'])) { echo htmlspecialchars($_SESSION['altError']); unset($_SESSION['altError']); } ?>
+                            </small>
+                            <input type="text" class="form-control" id="alt-text" name="alt-text" placeholder="Enter alt text"
+                                   value="<?php if(isset($_SESSION['alt-text'])) { echo htmlspecialchars($_SESSION['alt-text']); unset($_SESSION['alt-text']); } ?>">
                         </div>
 
+                        <!-- Actions -->
                         <div class="d-flex justify-content-between">
                             <button type="submit" class="btn btn-primary" name="submit" value="submit">
                                 <i class="bi bi-upload me-1"></i>Submit
@@ -78,7 +105,9 @@ $result = mysqli_stmt_get_result($stmt);
     </div>
 </div>
 
-<?php 
+<?php
 mysqli_stmt_close($stmt);
-include '../../includes/footer.php'; 
+include '../../includes/footer.php';
 ?>
+</body>
+</html>

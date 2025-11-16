@@ -65,52 +65,72 @@ if (!$image) {
 }
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Product Image</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
 <div class="container my-5">
   <div class="row justify-content-center">
-  <div class="col-lg-6">
-    <div class="card shadow-sm">
-    <div class="card-body">
-      <?php include '../../includes/alert.php'; ?>
-      <h4 class="card-title mb-4">
-      <i class="bi bi-image me-2 text-dark"></i>Edit Product Image
-      </h4>
-      <form method="POST" enctype="multipart/form-data" action="update.php">
-      <input type="hidden" name="image_id" value="<?= htmlspecialchars($image['image_id']) ?>">
-      <input type="hidden" name="existingImage" value="<?= htmlspecialchars($image['img_path']) ?>">
+    <div class="col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <?php include '../../includes/alert.php'; ?>
+          <h4 class="card-title mb-4">
+            <i class="bi bi-image me-2 text-dark"></i>Edit Product Image
+          </h4>
+          <form method="POST" enctype="multipart/form-data" action="update.php" novalidate>
+            <input type="hidden" name="image_id" value="<?= htmlspecialchars($image['image_id']) ?>">
+            <input type="hidden" name="existingImage" value="<?= htmlspecialchars($image['img_path']) ?>">
 
-      <div class="mb-3">
-        <label for="product" class="form-label">Product Name</label>
-        <select class="form-select" id="product" name="product_id" disabled>
-        <option value="<?= htmlspecialchars($image['product_id']) ?>" selected><?= htmlspecialchars($image['product_name']) ?></option>
-        </select>
-      </div>
+            <div class="mb-3">
+              <label for="product" class="form-label">Product Name</label>
+              <select class="form-select" id="product" name="product_id" disabled>
+                <option value="<?= htmlspecialchars($image['product_id']) ?>" selected>
+                  <?= htmlspecialchars($image['product_name']) ?>
+                </option>
+              </select>
+            </div>
 
-      <div class="mb-3">
-        <label for="alt_text" class="form-label">Alt Text</label>
-        <input type="text" class="form-control" id="alt_text" name="alt_text" value="<?= htmlspecialchars($image['alt_text']) ?>" required>
-      </div>
+            <div class="mb-3">
+              <label for="alt_text" class="form-label">Alt Text</label>
+              <small class="text-danger">
+                <?php if(isset($_SESSION['altError'])) { echo htmlspecialchars($_SESSION['altError']); unset($_SESSION['altError']); } ?>
+              </small>
+              <input type="text" class="form-control" id="alt_text" name="alt_text"
+                     value="<?= isset($_SESSION['alt_text']) ? htmlspecialchars($_SESSION['alt_text']) : htmlspecialchars($image['alt_text']) ?>">
+            </div>
 
-      <div class="mb-3">
-        <label for="image" class="form-label">Image File</label>
-        <input type="file" class="form-control" id="image" name="image">
-        <div class="mt-3">
-        <img src="<?= htmlspecialchars($image['img_path']) ?>" alt="<?= htmlspecialchars($image['alt_text']) ?>" width="250" height="250" class="border rounded">
+            <div class="mb-3">
+              <label for="image" class="form-label">Image File</label>
+              <small class="text-danger">
+                <?php if(isset($_SESSION['imageError'])) { echo htmlspecialchars($_SESSION['imageError']); unset($_SESSION['imageError']); } ?>
+              </small>
+              <input type="file" class="form-control" id="image" name="image">
+              <div class="mt-3">
+                <img src="<?= htmlspecialchars($image['img_path']) ?>" alt="<?= htmlspecialchars($image['alt_text']) ?>" width="250" height="250" class="border rounded">
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <button type="submit" class="btn btn-primary" name="submit" value="submit">
+                <i class="bi bi-check-circle me-1"></i>Update
+              </button>
+              <a href="index.php" class="btn btn-secondary">
+                <i class="bi bi-x-circle me-1"></i>Cancel
+              </a>
+            </div>
+          </form>
         </div>
       </div>
-
-      <div class="d-flex justify-content-between">
-        <button type="submit" class="btn btn-primary" name="submit" value="submit">
-        <i class="bi bi-check-circle me-1"></i>Update
-        </button>
-        <a href="index.php" class="btn btn-secondary">
-        <i class="bi bi-x-circle me-1"></i>Cancel
-        </a>
-      </div>
-      </form>
     </div>
-    </div>
-  </div>
   </div>
 </div>
 
 <?php include '../../includes/footer.php'; ?>
+</body>
+</html>

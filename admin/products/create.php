@@ -45,28 +45,31 @@ $result2 = mysqli_stmt_get_result($stmt2);
                 <div class="card-body">
                     <h4 class="card-title mb-4">
                         <i class="bi bi-box-seam me-2"></i>Create New Product
-                    </h4>
+                    </h4>   
 
                     <form method="POST" action="store.php" enctype="multipart/form-data">
                         <!-- Product Name -->
                         <div class="mb-3">
                             <label for="name" class="form-label">Product Name</label>
-                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter product name" maxlength="255" required>
+                            <small class="text-danger"><?php if (isset($_SESSION['nameError'])) { echo $_SESSION['nameError']; unset($_SESSION['nameError']); } ?></small>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter product name" maxlength="255" value="<?php if (isset($_SESSION['productName'])) echo $_SESSION['productName']; ?>">
                         </div>
 
                         <!-- Description -->
                         <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <input type="text" class="form-control" id="description" name="description" placeholder="Enter product description" maxlength="1000" required>
+                            <label for="description" class="form-label">Description</label>     
+                            <small class="text-danger"><?php if (isset($_SESSION['descriptionError'])) { echo $_SESSION['descriptionError']; unset($_SESSION['descriptionError']); } ?></small>
+                            <input type="text" class="form-control" id="description" name="description" placeholder="Enter product description" maxlength="1000" value="<?php if (isset($_SESSION['description'])) echo $_SESSION['description']; ?>">
                         </div>
 
                         <!-- Brand -->
                         <div class="mb-3">
                             <label for="brand" class="form-label">Brand</label>
-                            <select class="form-select" id="brand" name="brand" required>
-                                <option value="" disabled selected>Select Brand</option>
+                            <small class="text-danger"><?php if (isset($_SESSION['brandError'])) { echo $_SESSION['brandError']; unset($_SESSION['brandError']); } ?></small>
+                            <select class="form-select" id="brand" name="brand">
+                                <option value="" disabled <?php echo !isset($_SESSION['brand']) ? 'selected' : ''; ?>>Select Brand</option>
                                 <?php while ($row = mysqli_fetch_assoc($result2)) : ?>
-                                    <option value="<?=(int)$row['brand_id'] ?>"><?=htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8') ?></option>
+                                    <option value="<?=(int)$row['brand_id'] ?>" <?php echo (isset($_SESSION['brand']) && $_SESSION['brand'] == $row['brand_id']) ? 'selected' : ''; ?>><?=htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8') ?></option>
                                 <?php endwhile; ?>
                             </select>
                         </div>
@@ -74,10 +77,11 @@ $result2 = mysqli_stmt_get_result($stmt2);
                         <!-- Category -->
                         <div class="mb-3">
                             <label for="category" class="form-label">Category</label>
-                            <select class="form-select" id="category" name="category" required>
-                                <option value="" disabled selected>Select Category</option>
+                            <small class="text-danger"><?php if (isset($_SESSION['categoryError'])) { echo $_SESSION['categoryError']; unset($_SESSION['categoryError']); } ?></small>
+                            <select class="form-select" id="category" name="category">
+                                <option value="" disabled <?php echo !isset($_SESSION['category']) ? 'selected' : ''; ?>>Select Category</option>
                                 <?php while ($row = mysqli_fetch_assoc($result1)) : ?>
-                                    <option value="<?=(int)$row['category_id'] ?>"><?=htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8') ?></option>
+                                    <option value="<?=(int)$row['category_id'] ?>" <?php echo (isset($_SESSION['category']) && $_SESSION['category'] == $row['category_id']) ? 'selected' : ''; ?>><?=htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8') ?></option>
                                 <?php endwhile; ?>
                             </select>
                         </div>
@@ -85,15 +89,16 @@ $result2 = mysqli_stmt_get_result($stmt2);
                         <!-- Dimensions -->
                         <div class="mb-3">
                             <label class="form-label">Dimensions (cm)</label>
+                            <small class="text-danger"><?php if (isset($_SESSION['dimensionError'])) { echo $_SESSION['dimensionError']; unset($_SESSION['dimensionError']); } ?></small>
                             <div class="row g-2">
                                 <div class="col-md-4">
-                                    <input type="number" step="0.01" min="0" max="9999.99" class="form-control" name="length" placeholder="Length" required>
+                                    <input class="form-control" name="length" placeholder="Length" value="<?php if(isset($_SESSION['length'])) echo $_SESSION['length']; ?>">
                                 </div>
                                 <div class="col-md-4">
-                                    <input type="number" step="0.01" min="0" max="9999.99" class="form-control" name="width" placeholder="Width" required>
+                                    <input class="form-control" name="width" placeholder="Width" value="<?php if(isset($_SESSION['width'])) echo $_SESSION['width']; ?>">
                                 </div>
                                 <div class="col-md-4">
-                                    <input type="number" step="0.01" min="0" max="9999.99" class="form-control" name="height" placeholder="Height" required>
+                                    <input class="form-control" name="height" placeholder="Height" value="<?php if(isset($_SESSION['height'])) echo $_SESSION['height']; ?>">
                                 </div>
                             </div>
                         </div>
