@@ -134,12 +134,24 @@ mysqli_stmt_close($stmt);
 
                 foreach ($statuses as $status) {
                     $selected = ($currentStatus === $status) ? 'selected' : '';
-                    $disabledOption = ($statusOrder[$status] < $currentIndex && $status !== $currentStatus) ? 'disabled' : '';
+                    $disabledOption = '';
 
+                    // Disable all previous statuses
+                    if ($statusOrder[$status] < $currentIndex && $status !== $currentStatus) {
+                        $disabledOption = 'disabled';
+                    }
+
+                    // Disable statuses more than one step ahead
+                    if ($statusOrder[$status] > $currentIndex + 1 && $status !== 'cancelled') {
+                        $disabledOption = 'disabled';
+                    }
+
+                    // Disable 'cancelled' if already shipped or later
                     if ($status === 'cancelled' && $statusOrder[$currentStatus] >= $statusOrder['shipped']) {
                         $disabledOption = 'disabled';
                     }
 
+                    // Always disable 'received' (only customers can mark as received)
                     if ($status === 'received') {
                         $disabledOption = 'disabled';
                     }
@@ -185,7 +197,13 @@ mysqli_stmt_close($stmt);
                                 <td><?=htmlspecialchars($item['product_name']) ?></td>
                                 <td><?=htmlspecialchars($item['brand_name']) ?></td>
                                 <td><?=htmlspecialchars($item['category_name']) ?></td>
-                                <td><?=htmlspecialchars($item['color']) ?> / <?=htmlspecialchars($item['material']) ?></td>
+                                <td><?php 
+                                    $parts = array_filter([
+                                        htmlspecialchars($item['color']),
+                                        htmlspecialchars($item['material'])
+                                    ]);
+                                    echo implode(' / ', $parts);
+                                ?></td>
                                 <td>₱<?=number_format($item['unit_price'], 2) ?></td>
                                 <td><?=htmlspecialchars($item['quantity']) ?></td>
                                 <td>₱<?=number_format($item['subtotal'], 2) ?></td>
