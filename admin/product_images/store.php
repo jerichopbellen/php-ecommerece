@@ -31,61 +31,72 @@ if (isset($_POST['submit'])) {
         exit;
     }
 
-    if (!isset($_FILES['img_path']) || $_FILES['img_path']['error'] !== UPLOAD_ERR_OK) {
-        $_SESSION['imageError'] = "No file uploaded.";
+    if (!isset($_FILES['img_path']) || empty($_FILES['img_path']['name'][0])) {
+        $_SESSION['imageError'] = "No files uploaded.";
         header("Location: create.php");
         exit;
     }
 
     $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-    $fileType = $_FILES['img_path']['type'];
-
-    if (!in_array($fileType, $allowedTypes)) {
-        $_SESSION['imageError'] = "Wrong file type. Only JPG and PNG allowed.";
-        header("Location: create.php");
-        exit;
-    }
-
-    $fileName   = basename($_FILES['img_path']['name']);
-    $targetDir  = '../product_images/images/';
-    $targetPath = $targetDir . $fileName;
+    $targetDir    = '../product_images/images/';
 
     if (!is_dir($targetDir)) {
         mkdir($targetDir, 0755, true);
     }
 
-    if (!move_uploaded_file($_FILES['img_path']['tmp_name'], $targetPath)) {
-        $_SESSION['imageError'] = "Failed to upload file.";
-        header("Location: create.php");
-        exit;
-    }
-
-    $dbPath = '/Furnitures/admin/product_images/images/' . $fileName;
-
-    // Transaction
     mysqli_begin_transaction($conn);
 
     try {
         $stmt = $conn->prepare("INSERT INTO product_images (img_path, alt_text, product_id) VALUES (?, ?, ?)");
-        $stmt->bind_param("ssi", $dbPath, $alt_text, $product);
 
-        if ($stmt->execute()) {
-            mysqli_commit($conn);
+        foreach ($_FILES['img_path']['name'] as $key => $fileName) {
+            $fileType = $_FILES['img_path']['type'][$key];
+            $tmpName  = $_FILES['img_path']['tmp_name'][$key];
+            $error    = $_FILES['img_path']['error'][$key];
 
-            // Clear session values
-            foreach (['product','alt-text'] as $field) {
-                unset($_SESSION[$field]);
+            if ($error !== UPLOAD_ERR_OK) {
+                throw new Exception("Error uploading file: $fileName");
             }
 
-            $_SESSION['success'] = "Product image added successfully.";
-            header("Location: index.php");
-            exit;
-        } else {
-            throw new Exception("Failed to execute statement.");
+            if (!in_array($fileType, $allowedTypes)) {
+                $invalidFiles = [];
+                foreach ($_FILES['img_path']['name'] as $k => $name) {
+                    if (!in_array($_FILES['img_path']['type'][$k], $allowedTypes)) {
+                        $invalidFiles[] = $name;
+                    }
+                }
+                throw new Exception("Wrong file type for: " . implode(", ", $invalidFiles) . ". Only JPG and PNG allowed.");
+            }
+
+            $safeName   = uniqid("img_", true) . "_" . basename($fileName);
+            $targetPath = $targetDir . $safeName;
+
+            if (!move_uploaded_file($tmpName, $targetPath)) {
+                throw new Exception("Failed to upload file: $fileName");
+            }
+
+            $dbPath = '/Furnitures/admin/product_images/images/' . $safeName;
+
+            $stmt->bind_param("ssi", $dbPath, $alt_text, $product);
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to insert record for $fileName");
+            }
         }
+
+        mysqli_commit($conn);
+
+        // Clear session values
+        foreach (['product','alt-text'] as $field) {
+            unset($_SESSION[$field]);
+        }
+
+        $_SESSION['success'] = "Product images added successfully.";
+        header("Location: index.php");
+        exit;
+
     } catch (Exception $e) {
         mysqli_rollback($conn);
-        $_SESSION['error'] = "Failed to add product image. Please try again.";
+        $_SESSION['error'] = "Failed to add product images. " . $e->getMessage();
         header("Location: create.php");
         exit;
     }

@@ -98,7 +98,7 @@ if (!$image) {
                 <?php if(isset($_SESSION['altError'])) { echo htmlspecialchars($_SESSION['altError']); unset($_SESSION['altError']); } ?>
               </small>
               <input type="text" class="form-control" id="alt_text" name="alt_text"
-                     value="<?= isset($_SESSION['alt_text']) ? htmlspecialchars($_SESSION['alt_text']) : htmlspecialchars($image['alt_text']) ?>">
+                     value="<?= htmlspecialchars($image['alt_text']) ?>">
             </div>
 
             <div class="mb-3">

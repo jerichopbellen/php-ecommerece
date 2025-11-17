@@ -72,11 +72,12 @@ $result = mysqli_stmt_get_result($stmt);
 
                         <!-- Image -->
                         <div class="mb-3">
-                            <label for="image" class="form-label">Image File</label>
+                            <label for="image" class="form-label">Image Files</label>
                             <small class="text-danger">
                                 <?php if(isset($_SESSION['imageError'])) { echo htmlspecialchars($_SESSION['imageError']); unset($_SESSION['imageError']); } ?>
                             </small>
-                            <input class="form-control" type="file" name="img_path">
+                            <input class="form-control" type="file" name="img_path[]" multiple>
+                            <div class="form-text">You can select multiple images (JPG/PNG).</div>
                         </div>
 
                         <!-- Alt Text -->
