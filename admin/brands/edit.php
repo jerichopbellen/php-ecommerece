@@ -38,7 +38,7 @@ if ($id === false || $id === null) {
   exit;
 }
 
-// Prepared statement (already implemented correctly)
+// Prepared statement
 $stmt = mysqli_prepare($conn, "SELECT * FROM brands WHERE brand_id = ?");
 mysqli_stmt_bind_param($stmt, "i", $id);
 mysqli_stmt_execute($stmt);
@@ -64,8 +64,9 @@ if (!$brand) {
       <form action="update.php" method="POST">
       <input type="hidden" name="brand_id" value="<?=htmlspecialchars($brand['brand_id'], ENT_QUOTES, 'UTF-8') ?>">
       <div class="mb-3">
-        <label for="brand_name" class="form-label">Brand Name</label>
-        <input type="text" class="form-control" id="brand_name" name="brand_name" value="<?=htmlspecialchars($brand['name'], ENT_QUOTES, 'UTF-8') ?>" required>
+          <label for="name" class="form-label">Brand Name</label>
+          <small class="text-danger"><?php if (isset($_SESSION['nameError'])) { echo $_SESSION['nameError']; unset($_SESSION['nameError']); } ?></small>
+          <input type="text" class="form-control" id="name" name="name" value="<?=htmlspecialchars($brand['name'], ENT_QUOTES, 'UTF-8') ?>">
       </div>
 
       <div class="d-flex justify-content-between">

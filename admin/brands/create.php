@@ -46,11 +46,8 @@ if (isset($_SESSION['old_input']['name'])) {
                     <form method="POST" action="store.php" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="name" class="form-label">Brand Name</label>
-                            <input type="text" class="form-control" id="name" name="name" 
-                                   value="<?php echo $name; ?>" 
-                                   placeholder="Enter brand name" 
-                                   maxlength="255" 
-                                   required>
+                            <small class="text-danger"><?php if (isset($_SESSION['nameError'])) { echo $_SESSION['nameError']; unset($_SESSION['nameError']); } ?></small>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter brand name" maxlength="255" value="<?php echo $name; ?>">
                         </div>
 
                         <div class="d-flex justify-content-between">

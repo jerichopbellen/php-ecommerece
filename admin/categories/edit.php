@@ -65,8 +65,9 @@ if (!$category) {
       <input type="hidden" name="category_id" value="<?=htmlspecialchars($category['category_id'], ENT_QUOTES, 'UTF-8') ?>">
 
       <div class="mb-3">
-        <label for="category_name" class="form-label">Category Name</label>
-        <input type="text" class="form-control" id="category_name" name="category_name" value="<?= htmlspecialchars($category['name'], ENT_QUOTES, 'UTF-8') ?>" required>
+          <label for="name" class="form-label">Category Name</label>
+          <small class="text-danger"><?php if (isset($_SESSION['nameError'])) { echo $_SESSION['nameError']; unset($_SESSION['nameError']); } ?></small>
+          <input type="text" class="form-control" id="name" name="name" value="<?=htmlspecialchars($category['name'], ENT_QUOTES, 'UTF-8') ?>">
       </div>
 
       <div class="d-flex justify-content-between">

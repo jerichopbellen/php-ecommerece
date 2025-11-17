@@ -11,12 +11,13 @@ include '../../includes/config.php';
 
 if (isset($_POST['submit'])) {
     // Input sanitization
+    $_SESSION['brandName'] = $_POST['name'];
     $name = trim($_POST['name']);
     $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
     
     // Validate input
     if (empty($name)) {
-        $_SESSION['error'] = "Brand name cannot be empty.";
+        $_SESSION['nameError'] = "Brand name cannot be empty.";
         header("Location: create.php");
         exit;
     }
@@ -50,6 +51,7 @@ if (isset($_POST['submit'])) {
         if ($result) {
             mysqli_commit($conn);
             mysqli_stmt_close($stmt);
+            unset($_SESSION['brandName']);
             $_SESSION['success'] = "Brand added successfully.";
             header("Location: index.php");
             exit;

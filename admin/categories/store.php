@@ -9,13 +9,15 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 include '../../includes/config.php';
 
 if (isset($_POST['submit'])) {
+
+    $_SESSION['categoryName'] = $_POST['name'];
     // Input sanitization
     $name = trim($_POST['name']);
     $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
     
     // Validate input
     if (empty($name)) {
-        $_SESSION['error'] = "Category name cannot be empty.";
+        $_SESSION['nameError'] = "Category name cannot be empty.";
         header("Location: create.php");
         exit;
     }
@@ -48,6 +50,7 @@ if (isset($_POST['submit'])) {
         if ($result) {
             // Commit transaction
             mysqli_commit($conn);
+            unset($_SESSION['categoryName']);
             $_SESSION['success'] = "Category added successfully.";
             header("Location: index.php");
             exit;

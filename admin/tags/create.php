@@ -46,9 +46,8 @@ unset($_SESSION['old_name']);
       <form action="store.php" method="POST">
       <div class="mb-3">
         <label for="name" class="form-label">Tag Name</label>
-        <input type="text" name="name" id="name" class="form-control" 
-           placeholder="Enter tag name" 
-           value="<?=$oldName ?>" required>
+        <small class="text-danger"><?php if (isset($_SESSION['nameError'])) { echo $_SESSION['nameError']; unset($_SESSION['nameError']); } ?></small>
+        <input type="text" class="form-control" id="name" name="name" placeholder="Enter tag name" maxlength="255" value="<?php if (isset($_SESSION['tagName'])) echo $_SESSION['tagName']; ?>">
       </div>
 
       <div class="d-flex justify-content-between">

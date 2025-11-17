@@ -13,16 +13,19 @@ include '../../includes/config.php';
 $tag_id = filter_input(INPUT_POST, 'tag_id', FILTER_VALIDATE_INT);
 $name = trim($_POST['name'] ?? '');
 
-// Validate inputs
-if (!$tag_id || empty($name)) {
-    $_SESSION['error'] = "Invalid input data.";
-    header("Location: index.php");
-    exit;
-}
-
 // Start transaction
 mysqli_begin_transaction($conn);
 
+if(isset($_POST['submit'])) {
+
+    $_SESSION['tagName'] = $_POST['name'] ?? '';
+
+    if (empty($_POST['name'])) {
+        $_SESSION['nameError'] = "Tag name is required.";
+        header("Location: edit.php?id=$tag_id");
+        exit;
+    }
+}
 try {
     // Check if tag name already exists (excluding current tag)
     $check_stmt = mysqli_prepare($conn, "SELECT tag_id FROM tags WHERE name = ? AND tag_id != ?");
@@ -49,7 +52,7 @@ try {
     
     // Commit transaction
     mysqli_commit($conn);
-    
+    unset($_SESSION['tagName']);
     $_SESSION['success'] = "Tag updated successfully.";
     header("Location: index.php");
     exit;

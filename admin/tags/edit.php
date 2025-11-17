@@ -63,20 +63,20 @@ if (!$tag) {
       <i class="bi bi-bookmarks me-2 text-dark"></i>Edit Tag
       </h4>
       <form action="update.php" method="POST">
-      <input type="hidden" name="tag_id" value="<?=htmlspecialchars($tag['tag_id'], ENT_QUOTES, 'UTF-8') ?>">
-      <div class="mb-3">
-        <label for="name" class="form-label">Tag Name</label>
-        <input type="text" name="name" id="name" class="form-control" value="<?=htmlspecialchars($tag['name'], ENT_QUOTES, 'UTF-8') ?>" required>
-      </div>
-
-      <div class="d-flex justify-content-between">
-        <button type="submit" class="btn btn-primary" name="submit" value="submit">
-        <i class="bi bi-check-circle me-1"></i>Update
-        </button>
-        <a href="index.php" class="btn btn-secondary">
-        <i class="bi bi-x-circle me-1"></i>Cancel
-        </a>
-      </div>
+        <input type="hidden" name="tag_id" value="<?=htmlspecialchars($tag['tag_id'], ENT_QUOTES, 'UTF-8') ?>">
+        <div class="mb-3">
+          <label for="name" class="form-label">Tag Name</label>
+          <small class="text-danger"><?php if (isset($_SESSION['nameError'])) { echo $_SESSION['nameError']; unset($_SESSION['nameError']); } ?></small>
+          <input type="text" class="form-control" id="name" name="name" value="<?=htmlspecialchars($tag['name'], ENT_QUOTES, 'UTF-8') ?>">
+        </div>
+        <div class="d-flex justify-content-between">
+          <button type="submit" class="btn btn-primary" name="submit" value="submit">
+          <i class="bi bi-check-circle me-1"></i>Update
+          </button>
+          <a href="index.php" class="btn btn-secondary">
+          <i class="bi bi-x-circle me-1"></i>Cancel
+          </a>
+        </div>
       </form>
     </div>
     </div>
