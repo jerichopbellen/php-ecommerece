@@ -94,16 +94,25 @@ mysqli_stmt_close($stmt);
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label for="fname" class="form-label">First Name</label>
-                                <input type="text" name="fname" id="fname" class="form-control" value="<?= htmlspecialchars($profile['first_name'], ENT_QUOTES, 'UTF-8') ?>" required>
+                                <small class="text-danger">
+                                    <?php if(isset($_SESSION['fnameError'])) { echo htmlspecialchars($_SESSION['fnameError']); unset($_SESSION['fnameError']); } ?>
+                                </small>
+                                <input type="text" name="fname" id="fname" class="form-control"
+                                    value="<?= htmlspecialchars($profile['first_name'], ENT_QUOTES, 'UTF-8') ?>">
                             </div>
                             <div class="col-md-6">
                                 <label for="lname" class="form-label">Last Name</label>
-                                <input type="text" name="lname" id="lname" class="form-control" value="<?= htmlspecialchars($profile['last_name'], ENT_QUOTES, 'UTF-8') ?>" required>
+                                <small class="text-danger">
+                                    <?php if(isset($_SESSION['lnameError'])) { echo htmlspecialchars($_SESSION['lnameError']); unset($_SESSION['lnameError']); } ?>
+                                </small>
+                                <input type="text" name="lname" id="lname" class="form-control"
+                                    value="<?= htmlspecialchars($profile['last_name'], ENT_QUOTES, 'UTF-8') ?>">
                             </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Email</label>
-                            <input type="email" class="form-control" value="<?= htmlspecialchars($profile['email'], ENT_QUOTES, 'UTF-8') ?>" disabled>
+                            <input type="text" class="form-control"
+                                value="<?= htmlspecialchars($profile['email'], ENT_QUOTES, 'UTF-8') ?>" readonly>
                         </div>
                         <button type="submit" name="submit_profile" class="btn btn-outline-primary w-100">
                             <i class="bi bi-pencil-square me-1"></i> Save Changes
@@ -119,15 +128,24 @@ mysqli_stmt_close($stmt);
                     <form method="POST" action="update_profile.php">
                         <div class="mb-3">
                             <label for="current_password" class="form-label">Current Password</label>
-                            <input type="password" name="current_password" id="current_password" class="form-control" required>
+                            <small class="text-danger">
+                                <?php if(isset($_SESSION['currentPassError'])) { echo htmlspecialchars($_SESSION['currentPassError']); unset($_SESSION['currentPassError']); } ?>
+                            </small>
+                            <input type="password" name="current_password" id="current_password" class="form-control">
                         </div>
                         <div class="mb-3">
                             <label for="new_password" class="form-label">New Password</label>
-                            <input type="password" name="new_password" id="new_password" class="form-control" required>
+                            <small class="text-danger">
+                                <?php if(isset($_SESSION['newPassError'])) { echo htmlspecialchars($_SESSION['newPassError']); unset($_SESSION['newPassError']); } ?>
+                            </small>
+                            <input type="password" name="new_password" id="new_password" class="form-control">
                         </div>
                         <div class="mb-3">
                             <label for="confirm_password" class="form-label">Confirm New Password</label>
-                            <input type="password" name="confirm_password" id="confirm_password" class="form-control" required>
+                            <small class="text-danger">
+                                <?php if(isset($_SESSION['confirmPassError'])) { echo htmlspecialchars($_SESSION['confirmPassError']); unset($_SESSION['confirmPassError']); } ?>
+                            </small>
+                            <input type="password" name="confirm_password" id="confirm_password" class="form-control">
                         </div>
                         <button type="submit" name="submit_password" class="btn btn-outline-warning w-100">
                             <i class="bi bi-shield-lock me-1"></i> Update Password
@@ -195,43 +213,71 @@ mysqli_stmt_close($stmt);
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h4 class="mb-4"><i class="bi bi-geo-alt me-2"></i>Add New Address</h4>
-                    <form method="POST" action="update_profile.php">
+                    <form method="POST" action="update_profile.php" novalidate>
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="recipient" class="form-label">Recipient Name</label>
-                                <input type="text" name="recipient" id="recipient" class="form-control" required>
+                                <small class="text-danger">
+                                    <?php if(isset($_SESSION['recipientError'])) { echo htmlspecialchars($_SESSION['recipientError']); unset($_SESSION['recipientError']); } ?>
+                                </small>
+                                <input type="text" name="recipient" id="recipient" class="form-control"
+                                    value="<?= isset($_SESSION['recipient']) ? htmlspecialchars($_SESSION['recipient']) : '' ?>">
                             </div>
                             <div class="col-md-6">
                                 <label for="phone" class="form-label">Phone</label>
-                                <input type="text" name="phone" id="phone" class="form-control" required
-                                    pattern="^\d+$"
-                                    title="Enter numbers only">
+                                <small class="text-danger">
+                                    <?php if(isset($_SESSION['phoneError'])) { echo htmlspecialchars($_SESSION['phoneError']); unset($_SESSION['phoneError']); } ?>
+                                </small>
+                                <input type="text" name="phone" id="phone" class="form-control"
+                                    value="<?= isset($_SESSION['phone']) ? htmlspecialchars($_SESSION['phone']) : '' ?>">
                             </div>
                             <div class="col-md-6">
                                 <label for="street" class="form-label">Street</label>
-                                <input type="text" name="street" id="street" class="form-control" required>
+                                <small class="text-danger">
+                                    <?php if(isset($_SESSION['streetError'])) { echo htmlspecialchars($_SESSION['streetError']); unset($_SESSION['streetError']); } ?>
+                                </small>
+                                <input type="text" name="street" id="street" class="form-control"
+                                    value="<?= isset($_SESSION['street']) ? htmlspecialchars($_SESSION['street']) : '' ?>">
                             </div>
                             <div class="col-md-6">
                                 <label for="barangay" class="form-label">Barangay</label>
-                                <input type="text" name="barangay" id="barangay" class="form-control" required>
+                                <small class="text-danger">
+                                    <?php if(isset($_SESSION['barangayError'])) { echo htmlspecialchars($_SESSION['barangayError']); unset($_SESSION['barangayError']); } ?>
+                                </small>
+                                <input type="text" name="barangay" id="barangay" class="form-control"
+                                    value="<?= isset($_SESSION['barangay']) ? htmlspecialchars($_SESSION['barangay']) : '' ?>">
                             </div>
                             <div class="col-md-6">
                                 <label for="city" class="form-label">City</label>
-                                <input type="text" name="city" id="city" class="form-control" required>
+                                <small class="text-danger">
+                                    <?php if(isset($_SESSION['cityError'])) { echo htmlspecialchars($_SESSION['cityError']); unset($_SESSION['cityError']); } ?>
+                                </small>
+                                <input type="text" name="city" id="city" class="form-control"
+                                    value="<?= isset($_SESSION['city']) ? htmlspecialchars($_SESSION['city']) : '' ?>">
                             </div>
                             <div class="col-md-6">
                                 <label for="province" class="form-label">Province</label>
-                                <input type="text" name="province" id="province" class="form-control" required>
+                                <small class="text-danger">
+                                    <?php if(isset($_SESSION['provinceError'])) { echo htmlspecialchars($_SESSION['provinceError']); unset($_SESSION['provinceError']); } ?>
+                                </small>
+                                <input type="text" name="province" id="province" class="form-control"
+                                    value="<?= isset($_SESSION['province']) ? htmlspecialchars($_SESSION['province']) : '' ?>">
                             </div>
                             <div class="col-md-6">
                                 <label for="zipcode" class="form-label">Zipcode</label>
-                                <input type="text" name="zipcode" id="zipcode" class="form-control" required
-                                    pattern="^\d+$"
-                                    title="Enter numbers only">
+                                <small class="text-danger">
+                                    <?php if(isset($_SESSION['zipcodeError'])) { echo htmlspecialchars($_SESSION['zipcodeError']); unset($_SESSION['zipcodeError']); } ?>
+                                </small>
+                                <input type="text" name="zipcode" id="zipcode" class="form-control"
+                                    value="<?= isset($_SESSION['zipcode']) ? htmlspecialchars($_SESSION['zipcode']) : '' ?>">
                             </div>
                             <div class="col-md-6">
                                 <label for="country" class="form-label">Country</label>
-                                <input type="text" name="country" id="country" class="form-control" required>
+                                <small class="text-danger">
+                                    <?php if(isset($_SESSION['countryError'])) { echo htmlspecialchars($_SESSION['countryError']); unset($_SESSION['countryError']); } ?>
+                                </small>
+                                <input type="text" name="country" id="country" class="form-control"
+                                    value="<?= isset($_SESSION['country']) ? htmlspecialchars($_SESSION['country']) : '' ?>">
                             </div>
                         </div>
                         <div class="mt-4">

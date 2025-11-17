@@ -11,14 +11,26 @@ if (!$userId) {
 
 // Update profile info
 if (isset($_POST['submit_profile'])) {
-    $fname = htmlspecialchars(trim($_POST['fname']), ENT_QUOTES, 'UTF-8');
-    $lname = htmlspecialchars(trim($_POST['lname']), ENT_QUOTES, 'UTF-8');
+    $fname = htmlspecialchars(trim($_POST['fname'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $lname = htmlspecialchars(trim($_POST['lname'] ?? ''), ENT_QUOTES, 'UTF-8');
 
+    // Validation
+    if ($fname === '') {
+        $_SESSION['fnameError'] = 'First name is required.';
+        header("Location: profile.php"); exit();
+    }
+    if ($lname === '') {
+        $_SESSION['lnameError'] = 'Last name is required.';
+        header("Location: profile.php"); exit();
+    }
+
+    // Update query
     $sql = "UPDATE users SET first_name = ?, last_name = ? WHERE user_id = ?";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, 'ssi', $fname, $lname, $userId);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
+
 
     $_SESSION['success'] = 'Profile updated successfully.';
     header("Location: profile.php");
@@ -57,16 +69,21 @@ if (isset($_POST['remove_avatar'])) {
 
 // Change password
 if (isset($_POST['submit_password'])) {
-    $current = sha1(trim($_POST['current_password']));
-    $new = trim($_POST['new_password']);
-    $confirm = trim($_POST['confirm_password']);
+    $current = sha1(trim($_POST['current_password'] ?? ''));
+    $new     = trim($_POST['new_password'] ?? '');
+    $confirm = trim($_POST['confirm_password'] ?? '');
 
-    if ($new !== $confirm) {
-        $_SESSION['error'] = 'New passwords do not match.';
-        header("Location: profile.php");
-        exit();
+    if ($new === '' || $confirm === '' || $_POST['current_password'] === '') {
+        $_SESSION['currentPassError'] = 'All password fields are required.';
+        header("Location: profile.php"); exit();
     }
 
+    if ($new !== $confirm) {
+        $_SESSION['confirmPassError'] = 'New passwords do not match.';
+        header("Location: profile.php"); exit();
+    }
+
+    // Verify current password
     $check_sql = "SELECT user_id FROM users WHERE user_id = ? AND password_hash = ?";
     $check_stmt = mysqli_prepare($conn, $check_sql);
     mysqli_stmt_bind_param($check_stmt, 'is', $userId, $current);
@@ -74,16 +91,19 @@ if (isset($_POST['submit_password'])) {
     mysqli_stmt_store_result($check_stmt);
 
     if (mysqli_stmt_num_rows($check_stmt) === 1) {
+        // Update password
         $update_sql = "UPDATE users SET password_hash = ? WHERE user_id = ?";
         $update_stmt = mysqli_prepare($conn, $update_sql);
-        $hashed_new = sha1($new);
+        $hashed_new = sha1($new); // consider password_hash() for stronger security
         mysqli_stmt_bind_param($update_stmt, 'si', $hashed_new, $userId);
         mysqli_stmt_execute($update_stmt);
         mysqli_stmt_close($update_stmt);
+
         $_SESSION['success'] = 'Password updated successfully.';
     } else {
-        $_SESSION['error'] = 'Current password is incorrect.';
+        $_SESSION['currentPassError'] = 'Current password is incorrect.';
     }
+
     mysqli_stmt_close($check_stmt);
 
     header("Location: profile.php");
@@ -133,23 +153,49 @@ if (isset($_POST['submit_avatar'])) {
 
 // Add new address
 if (isset($_POST['submit_address'])) {
-    $recipient = htmlspecialchars(trim($_POST['recipient']), ENT_QUOTES, 'UTF-8');
-    $street    = htmlspecialchars(trim($_POST['street']), ENT_QUOTES, 'UTF-8');
-    $barangay  = htmlspecialchars(trim($_POST['barangay']), ENT_QUOTES, 'UTF-8');
-    $city      = htmlspecialchars(trim($_POST['city']), ENT_QUOTES, 'UTF-8');
-    $province  = htmlspecialchars(trim($_POST['province']), ENT_QUOTES, 'UTF-8');
-    $zipcode   = htmlspecialchars(trim($_POST['zipcode']), ENT_QUOTES, 'UTF-8');
-    $country   = htmlspecialchars(trim($_POST['country']), ENT_QUOTES, 'UTF-8');
-    $phone     = htmlspecialchars(trim($_POST['phone']), ENT_QUOTES, 'UTF-8');
+    $recipient = htmlspecialchars(trim($_POST['recipient'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $street    = htmlspecialchars(trim($_POST['street'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $barangay  = htmlspecialchars(trim($_POST['barangay'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $city      = htmlspecialchars(trim($_POST['city'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $province  = htmlspecialchars(trim($_POST['province'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $zipcode   = htmlspecialchars(trim($_POST['zipcode'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $country   = htmlspecialchars(trim($_POST['country'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $phone     = htmlspecialchars(trim($_POST['phone'] ?? ''), ENT_QUOTES, 'UTF-8');
 
+    // Persist values in session
+    $_SESSION['recipient'] = $_POST['recipient'];
+    $_SESSION['street']    = $_POST['street'];
+    $_SESSION['barangay']  = $_POST['barangay'];
+    $_SESSION['city']      = $_POST['city'];
+    $_SESSION['province']  = $_POST['province'];
+    $_SESSION['zipcode']   = $_POST['zipcode'];
+    $_SESSION['country']   = $_POST['country'];
+    $_SESSION['phone']     = $_POST['phone'];
+
+    // Validation
+    if ($recipient === '') { $_SESSION['recipientError'] = 'Recipient name is required.'; header("Location: profile.php"); exit(); }
+    if ($phone === '' || !ctype_digit($phone)) { $_SESSION['phoneError'] = 'Phone must not be empty and must contain numbers only.'; header("Location: profile.php"); exit(); }
+    if ($street === '') { $_SESSION['streetError'] = 'Street is required.'; header("Location: profile.php"); exit(); }
+    if ($barangay === '') { $_SESSION['barangayError'] = 'Barangay is required.'; header("Location: profile.php"); exit(); }
+    if ($city === '') { $_SESSION['cityError'] = 'City is required.'; header("Location: profile.php"); exit(); }
+    if ($province === '') { $_SESSION['provinceError'] = 'Province is required.'; header("Location: profile.php"); exit(); }
+    if ($zipcode === '' || !ctype_digit($zipcode)) { $_SESSION['zipcodeError'] = 'Zipcode must not be empty and must contain numbers only.'; header("Location: profile.php"); exit(); }
+    if ($country === '') { $_SESSION['countryError'] = 'Country is required.'; header("Location: profile.php"); exit(); }
+
+    // Insert into DB
     $sql = "INSERT INTO addresses 
             (recipient, street, barangay, city, province, zipcode, country, phone, user_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, 'ssssssssi', 
+    mysqli_stmt_bind_param($stmt, 'ssssssssi',
         $recipient, $street, $barangay, $city, $province, $zipcode, $country, $phone, $userId);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
+
+    // Clear session values after success
+    foreach (['recipient','street','barangay','city','province','zipcode','country','phone'] as $field) {
+        unset($_SESSION[$field]);
+    }
 
     $_SESSION['success'] = 'Address added successfully.';
     header("Location: profile.php");
