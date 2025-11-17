@@ -95,7 +95,17 @@ if (isset($_SESSION['user_id'])) {
           </div>
           <div class="nav-item dropdown">
             <a class="nav-link dropdown-toggle text-light" style="opacity: 0.85;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <?= htmlspecialchars($_SESSION['email']) ?>
+                <?php
+                $user_id = $_SESSION['user_id'];
+                $stmt = $conn->prepare("SELECT email FROM users WHERE user_id = ?");
+                $stmt->bind_param("i", $user_id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                if ($row = $result->fetch_assoc()) {
+                  echo htmlspecialchars($row['email']);
+                }
+                $stmt->close();
+                ?>
             </a>
             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
               <li><a class="dropdown-item" href="http://<?= $_SERVER['SERVER_NAME'] ?>/furnitures/user/profile.php">My Profile</a></li>
