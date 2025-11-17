@@ -89,11 +89,7 @@ if (!$image) {
 
             <div class="mb-3">
               <label for="product" class="form-label">Product Name</label>
-              <select class="form-select" id="product" name="product_id" disabled>
-                <option value="<?= htmlspecialchars($image['product_id']) ?>" selected>
-                  <?= htmlspecialchars($image['product_name']) ?>
-                </option>
-              </select>
+              <h5><?= htmlspecialchars($image['product_name']) ?></h5>
             </div>
 
             <div class="mb-3">

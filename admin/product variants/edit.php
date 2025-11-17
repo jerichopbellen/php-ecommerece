@@ -91,11 +91,7 @@ if (!$product_variant) {
 
             <div class="mb-3">
               <label for="product" class="form-label">Product Name</label>
-              <select class="form-select" id="product" name="product_id" disabled>
-                <option value="<?= htmlspecialchars($product_variant['product_id']) ?>" selected>
-                  <?= htmlspecialchars($product_variant['product_name']) ?>
-                </option>
-              </select>
+              <h5><?= htmlspecialchars($product_variant['product_name']) ?></h5>
             </div>
 
             <div class="mb-3">

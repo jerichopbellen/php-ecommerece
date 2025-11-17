@@ -39,7 +39,7 @@ try {
     } else {
         mysqli_rollback($conn);
         mysqli_stmt_close($stmt);
-        $_SESSION['info'] = "Update failed: no changes made.";
+        $_SESSION['info'] = "No changes made.";
         header("Location: edit.php?id={$user_id}");
         exit;
     }

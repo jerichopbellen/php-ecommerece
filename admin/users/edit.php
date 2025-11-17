@@ -72,19 +72,15 @@ if (!$user) {
                 <div class="card-body">
                     <h4 class="card-title mb-4"><i class="bi bi-person-gear me-2"></i>Update User Role</h4>
                     <form action="update.php" method="POST">
+                        
+                        <div class="mb-3">
+                            <label for="firstName" class="form-label">Name</label>
+                            <h6><?= htmlspecialchars($user['first_name'])?> <?= htmlspecialchars($user['last_name']) ?></h6>
+                        </div>
+                    
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($user['email'], ENT_QUOTES) ?>" readonly>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="firstName" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="firstName" name="firstName" value="<?= htmlspecialchars($user['first_name'], ENT_QUOTES) ?>" readonly>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="lastName" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="lastName" name="lastName" value="<?= htmlspecialchars($user['last_name'], ENT_QUOTES) ?>" readonly>
+                            <h6><?= htmlspecialchars($user['email']) ?></h6>
                         </div>
 
                         <div class="mb-4">
