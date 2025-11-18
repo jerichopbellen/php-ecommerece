@@ -89,7 +89,7 @@ if (!$requiresStockDeduction) {
         $body = "
             <h2>Status Update</h2>
             <p>Your order <strong>#{$meta['order_id']}</strong> status is now: <strong>" . htmlspecialchars($newStatus) . "</strong>.</p>
-            <p><strong>Tracking:</strong> " . htmlspecialchars($meta['tracking_number'] ?? '—') . "</p>
+            " . ($newStatus !== 'processing' ? "<p><strong>Tracking:</strong> " . htmlspecialchars($meta['tracking_number'] ?? '—') . "</p>" : "") . "
             <p><strong>Ship to:</strong> {$address}</p>
             <h3>Order Details</h3>
             {$items}
