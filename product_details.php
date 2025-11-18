@@ -199,9 +199,9 @@ try {
                         echo " <span class='text-muted'>(" . number_format($rating, 1) . ")</span>";
                         ?>
                     </div>
-                        
-                    <label for="variant" class="form-label">Choose Variant:</label>
-                    <select name="variant_id" id="variant" class="form-select mb-3" form="addToCartForm" required>
+                    
+                    <label for="variant" class="form-label">Choose Variant:</label>                     <small class="text-danger"><?php if (isset($_SESSION['variantError'])) { echo $_SESSION['variantError']; unset($_SESSION['variantError']); } ?></small>
+                    <select name="variant_id" id="variant" class="form-select mb-3" form="addToCartForm">
                         <?php foreach ($variants as $v): ?>
                             <option value="<?= (int)$v['variant_id'] ?>" <?=$v['quantity'] <= 0 ? 'disabled' : '' ?>>
                                 <?php
@@ -227,7 +227,7 @@ try {
                         <form id="addToCartForm" method="POST" action="./cart/add_to_cart.php">
                             <input type="hidden" name="product_id" value="<?=(int)$product_id ?>">
                             <input type="hidden" name="action" value="add">
-                            <button type="submit" name="submit" class="btn btn-outline-primary">
+                            <button type="submit" name="submit" class="btn btn-outline-primary" <?=$total_stock <= 0 ? 'disabled' : '' ?>>
                                 <i class="bi bi-cart-plus me-1"></i> Add to Cart
                             </button>
                         </form>
