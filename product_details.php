@@ -238,7 +238,6 @@ try {
             <div class="card mb-3 shadow-sm">
                 <div class="card-body">
 
-                    <!-- Reviewer + Dates -->
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <strong><?=htmlspecialchars("{$review['first_name']} {$review['last_name']}") ?></strong>
                         <div class="text-muted small">
@@ -257,7 +256,6 @@ try {
                         </div>
                     </div>
 
-                    <!-- Variant + Rating -->
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <?php
                             $color = trim($review['color'] ?? '');
@@ -288,7 +286,6 @@ try {
                         </div>
                     </div>
 
-                    <!-- Comment -->
                     <p class="mb-0"><?=nl2br(htmlspecialchars($review['comment'])) ?></p>
                 </div>
             </div>
@@ -296,7 +293,6 @@ try {
     </div>
 </div>
 
-<!-- Image Zoom Modal -->
 <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
