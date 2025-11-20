@@ -29,17 +29,14 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Input sanitization
 $keyword = isset($_GET['search']) ? trim($_GET['search']) : '';
 $statusFilter = isset($_GET['status']) ? trim($_GET['status']) : 'active';
 
-// Validate status filter (whitelist approach)
 $allowedStatuses = ['all', 'active', 'deactivated', 'deleted'];
 if (!in_array($statusFilter, $allowedStatuses)) {
     $statusFilter = 'active';
 }
 
-// Build query with prepared statement
 $sql = "
     SELECT 
         user_id,
@@ -56,7 +53,6 @@ $sql = "
 $params = [];
 $types = '';
 
-// Apply keyword filter
 if ($keyword !== '') {
     $sql .= " AND (
         email LIKE ? 
@@ -72,7 +68,6 @@ if ($keyword !== '') {
     $types .= 'ssss';
 }
 
-// Apply status filter
 switch ($statusFilter) {
     case 'active':
         $sql .= " AND is_active = ? AND is_deleted = ?";
@@ -93,13 +88,11 @@ switch ($statusFilter) {
         break;
     case 'all':
     default:
-        // No additional filter
         break;
 }
 
 $sql .= " ORDER BY user_id ASC";
 
-// Execute prepared statement
 $stmt = mysqli_prepare($conn, $sql);
 if ($stmt === false) {
     die("Error preparing statement: " . mysqli_error($conn));

@@ -9,10 +9,8 @@ if (!isset($_SESSION['user_id'])) {
 include '../includes/config.php';
 include '../includes/header.php';
 
-// Sanitize and validate email from session
 $user_email = filter_var($_SESSION['email'], FILTER_SANITIZE_EMAIL);
 
-// Use prepared statement to prevent SQL injection
 $stmt = mysqli_prepare($conn, "SELECT * FROM contact_messages WHERE email = ? ORDER BY submitted_at DESC");
 mysqli_stmt_bind_param($stmt, "s", $user_email);
 mysqli_stmt_execute($stmt);

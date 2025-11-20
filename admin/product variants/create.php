@@ -29,7 +29,6 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Fetch products
 $stmt = mysqli_prepare($conn, "SELECT product_id, name FROM products ORDER BY name ASC");
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
@@ -53,7 +52,6 @@ $result = mysqli_stmt_get_result($stmt);
                     <h4 class="card-title mb-4"><i class="bi bi-sliders me-2"></i>Create Product Variant</h4>
 
                     <form method="POST" action="store.php" enctype="multipart/form-data">
-                        <!-- Product -->
                         <div class="mb-3">
                             <label for="product" class="form-label">Product Name</label>
                             <small class="text-danger">
@@ -70,7 +68,6 @@ $result = mysqli_stmt_get_result($stmt);
                             </select>
                         </div>
 
-                        <!-- Color / Material -->
                         <small class="text-danger">
                             <?php if(isset($_SESSION['variantError'])) { echo htmlspecialchars($_SESSION['variantError'], ENT_QUOTES, 'UTF-8'); unset($_SESSION['variantError']); } ?>
                         </small>
@@ -86,7 +83,6 @@ $result = mysqli_stmt_get_result($stmt);
                                    value="<?php if(isset($_SESSION['material'])) { echo htmlspecialchars($_SESSION['material'], ENT_QUOTES, 'UTF-8'); unset($_SESSION['material']); } ?>">
                         </div>
 
-                        <!-- Price -->
                         <div class="mb-3">
                             <label for="price" class="form-label">Sell Price</label>
                             <small class="text-danger">
@@ -96,7 +92,6 @@ $result = mysqli_stmt_get_result($stmt);
                                    value="<?php if(isset($_SESSION['price'])) { echo htmlspecialchars($_SESSION['price'], ENT_QUOTES, 'UTF-8'); unset($_SESSION['price']); } ?>">
                         </div>
 
-                        <!-- Quantity -->
                         <div class="mb-4">
                             <label for="quantity" class="form-label">Stock Quantity</label>
                             <small class="text-danger">
@@ -106,7 +101,6 @@ $result = mysqli_stmt_get_result($stmt);
                                    value="<?php if(isset($_SESSION['quantity'])) { echo htmlspecialchars($_SESSION['quantity'], ENT_QUOTES, 'UTF-8'); unset($_SESSION['quantity']); } ?>">
                         </div>
 
-                        <!-- Actions -->
                         <div class="d-flex justify-content-between">
                             <button type="submit" class="btn btn-primary" name="submit" value="submit">
                                 <i class="bi bi-check-circle me-1"></i>Submit

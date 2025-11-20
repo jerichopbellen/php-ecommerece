@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_id'])) {
 include('../includes/config.php');
 
 $user_id = $_SESSION['user_id'];
-// Input sanitization
 $name    = htmlspecialchars(trim($_POST['name'] ?? ''), ENT_QUOTES, 'UTF-8');
 $email   = filter_var(trim($_POST['email'] ?? ''), FILTER_SANITIZE_EMAIL);
 $subject = htmlspecialchars(trim($_POST['subject'] ?? ''), ENT_QUOTES, 'UTF-8');
@@ -27,11 +26,9 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     exit;
 }
 
-// Start transaction
 mysqli_begin_transaction($conn);
 
 try {
-    // Prepared statement (already present, keeping it)
     $sql = "INSERT INTO contact_messages (name, email, subject, message) VALUES (?, ?, ?, ?)";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "ssss", $name, $email, $subject, $message);
@@ -42,7 +39,6 @@ try {
     
     mysqli_stmt_close($stmt);
     
-    // Commit transaction
     mysqli_commit($conn);
     
     $_SESSION['success'] = "Your message has been sent successfully.";

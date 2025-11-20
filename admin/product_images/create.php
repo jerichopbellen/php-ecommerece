@@ -29,7 +29,6 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Fetch products
 $stmt = mysqli_prepare($conn, "SELECT product_id, name FROM products ORDER BY name ASC");
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
@@ -53,7 +52,6 @@ $result = mysqli_stmt_get_result($stmt);
                     <h4 class="card-title mb-4"><i class="bi bi-image me-2"></i>Upload Product Image</h4>
 
                     <form method="POST" action="store.php" enctype="multipart/form-data">
-                        <!-- Product -->
                         <div class="mb-3">
                             <label for="product" class="form-label">Product Name</label>
                             <small class="text-danger">
@@ -70,7 +68,6 @@ $result = mysqli_stmt_get_result($stmt);
                             </select>
                         </div>
 
-                        <!-- Image -->
                         <div class="mb-3">
                             <label for="image" class="form-label">Image Files</label>
                             <small class="text-danger">
@@ -80,7 +77,6 @@ $result = mysqli_stmt_get_result($stmt);
                             <div class="form-text">You can select multiple images (JPG/PNG).</div>
                         </div>
 
-                        <!-- Alt Text -->
                         <div class="mb-3">
                             <label for="alt-text" class="form-label">Alt Text</label>
                             <small class="text-danger">
@@ -90,7 +86,6 @@ $result = mysqli_stmt_get_result($stmt);
                                    value="<?php if(isset($_SESSION['alt-text'])) { echo htmlspecialchars($_SESSION['alt-text']); unset($_SESSION['alt-text']); } ?>">
                         </div>
 
-                        <!-- Actions -->
                         <div class="d-flex justify-content-between">
                             <button type="submit" class="btn btn-primary" name="submit" value="submit">
                                 <i class="bi bi-upload me-1"></i>Submit

@@ -29,7 +29,6 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Use prepared statements for fetching categories and brands
 $stmt1 = mysqli_prepare($conn, "SELECT category_id, name FROM categories ORDER BY name ASC");
 mysqli_stmt_execute($stmt1);
 $result1 = mysqli_stmt_get_result($stmt1);
@@ -48,21 +47,18 @@ $result2 = mysqli_stmt_get_result($stmt2);
                     </h4>   
 
                     <form method="POST" action="store.php" enctype="multipart/form-data">
-                        <!-- Product Name -->
                         <div class="mb-3">
                             <label for="name" class="form-label">Product Name</label>
                             <small class="text-danger"><?php if (isset($_SESSION['nameError'])) { echo $_SESSION['nameError']; unset($_SESSION['nameError']); } ?></small>
                             <input type="text" class="form-control" id="name" name="name" placeholder="Enter product name" maxlength="255" value="<?php if (isset($_SESSION['productName'])) echo $_SESSION['productName']; ?>">
                         </div>
 
-                        <!-- Description -->
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>     
                             <small class="text-danger"><?php if (isset($_SESSION['descriptionError'])) { echo $_SESSION['descriptionError']; unset($_SESSION['descriptionError']); } ?></small>
                             <input type="text" class="form-control" id="description" name="description" placeholder="Enter product description" maxlength="1000" value="<?php if (isset($_SESSION['description'])) echo $_SESSION['description']; ?>">
                         </div>
 
-                        <!-- Brand -->
                         <div class="mb-3">
                             <label for="brand" class="form-label">Brand</label>
                             <small class="text-danger"><?php if (isset($_SESSION['brandError'])) { echo $_SESSION['brandError']; unset($_SESSION['brandError']); } ?></small>
@@ -74,7 +70,6 @@ $result2 = mysqli_stmt_get_result($stmt2);
                             </select>
                         </div>
 
-                        <!-- Category -->
                         <div class="mb-3">
                             <label for="category" class="form-label">Category</label>
                             <small class="text-danger"><?php if (isset($_SESSION['categoryError'])) { echo $_SESSION['categoryError']; unset($_SESSION['categoryError']); } ?></small>
@@ -86,7 +81,6 @@ $result2 = mysqli_stmt_get_result($stmt2);
                             </select>
                         </div>
 
-                        <!-- Dimensions -->
                         <div class="mb-3">
                             <label class="form-label">Dimensions (cm)</label>
                             <small class="text-danger"><?php if (isset($_SESSION['dimensionError'])) { echo $_SESSION['dimensionError']; unset($_SESSION['dimensionError']); } ?></small>
@@ -102,8 +96,7 @@ $result2 = mysqli_stmt_get_result($stmt2);
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Actions -->
+                        
                         <div class="d-flex justify-content-between">
                             <button type="submit" class="btn btn-primary" name="submit" value="submit">
                                 <i class="bi bi-check-circle me-1"></i>Submit

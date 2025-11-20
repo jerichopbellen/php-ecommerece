@@ -38,7 +38,6 @@ if ($id === false || $id === null) {
   exit;
 }
 
-// Prepared statement
 $stmt = mysqli_prepare($conn, "
   SELECT 
     v.variant_id,

@@ -29,7 +29,6 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Input sanitization and validation
 if (!isset($_GET['id']) || !filter_var($_GET['id'], FILTER_VALIDATE_INT)) {
   $_SESSION['flash'] = "Invalid tag ID.";
   header("Location: index.php");
@@ -38,7 +37,6 @@ if (!isset($_GET['id']) || !filter_var($_GET['id'], FILTER_VALIDATE_INT)) {
 
 $tag_id = intval($_GET['id']);
 
-// Use prepared statement
 $stmt = mysqli_prepare($conn, "SELECT tag_id, name FROM tags WHERE tag_id = ?");
 mysqli_stmt_bind_param($stmt, "i", $tag_id);
 mysqli_stmt_execute($stmt);
@@ -46,7 +44,6 @@ $result = mysqli_stmt_get_result($stmt);
 $tag = mysqli_fetch_assoc($result);
 mysqli_stmt_close($stmt);
 
-// Check if tag exists
 if (!$tag) {
   $_SESSION['flash'] = "Tag not found.";
   header("Location: index.php");

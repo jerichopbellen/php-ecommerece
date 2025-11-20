@@ -29,10 +29,8 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Input sanitization
 $keyword = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-// Prepare SQL statement
 $sql = "
     SELECT 
         i.image_id AS image_id,
@@ -49,7 +47,6 @@ if ($keyword !== '') {
 
 $sql .= " ORDER BY p.name ASC";
 
-// Execute prepared statement
 $stmt = mysqli_prepare($conn, $sql);
 
 if ($stmt === false) {

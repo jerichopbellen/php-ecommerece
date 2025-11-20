@@ -9,10 +9,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 include '../../includes/config.php';
 
-// Input sanitization
 $name = trim($_POST['name'] ?? '');
 
-// Begin transaction
 mysqli_begin_transaction($conn);
 
 
@@ -27,7 +25,6 @@ if(isset($_POST['submit'])) {
     }
 
     try {
-        // Check if tag name already exists using prepared statement
         $check_stmt = mysqli_prepare($conn, "SELECT tag_id FROM tags WHERE name = ?");
         mysqli_stmt_bind_param($check_stmt, "s", $name);
         mysqli_stmt_execute($check_stmt);
@@ -42,7 +39,6 @@ if(isset($_POST['submit'])) {
         }
         mysqli_stmt_close($check_stmt);
         
-        // Insert new tag using prepared statement
         $insert_stmt = mysqli_prepare($conn, "INSERT INTO tags (name) VALUES (?)");
         mysqli_stmt_bind_param($insert_stmt, "s", $name);
         

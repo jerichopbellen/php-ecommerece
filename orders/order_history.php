@@ -9,13 +9,11 @@ if (!isset($_SESSION['user_id'])) {
   exit;
 }
 
-// Input sanitization
 $user_id = filter_var($_SESSION['user_id'], FILTER_VALIDATE_INT);
 if ($user_id === false) {
   die("Invalid user ID");
 }
 
-// Fetch all purchased products from completed or cancelled orders, including one image per product
 $sql = "
   SELECT 
     p.product_id,
@@ -73,7 +71,6 @@ $result = mysqli_stmt_get_result($stmt);
     }
     $subtotal = $row['quantity'] * $row['price'];
 
-    // Check if review exists - using prepared statement
     $review_check_sql = "
       SELECT review_id 
       FROM reviews 

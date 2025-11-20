@@ -11,22 +11,18 @@ include '../../includes/config.php';
 if (isset($_POST['submit'])) {
 
     $_SESSION['categoryName'] = $_POST['name'];
-    // Input sanitization
     $name = trim($_POST['name']);
     $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
     
-    // Validate input
     if (empty($name)) {
         $_SESSION['nameError'] = "Category name cannot be empty.";
         header("Location: create.php");
         exit;
     }
 
-    // Start transaction
     mysqli_begin_transaction($conn);
     
     try {
-        // Check if category name already exists using prepared statement
         $check_stmt = mysqli_prepare($conn, "SELECT category_id FROM categories WHERE name = ?");
         mysqli_stmt_bind_param($check_stmt, "s", $name);
         mysqli_stmt_execute($check_stmt);
@@ -41,14 +37,12 @@ if (isset($_POST['submit'])) {
         }
         mysqli_stmt_close($check_stmt);
 
-        // Insert new category using prepared statement
         $insert_stmt = mysqli_prepare($conn, "INSERT INTO categories (name) VALUES(?)");
         mysqli_stmt_bind_param($insert_stmt, "s", $name);
         $result = mysqli_stmt_execute($insert_stmt);
         mysqli_stmt_close($insert_stmt);
 
         if ($result) {
-            // Commit transaction
             mysqli_commit($conn);
             unset($_SESSION['categoryName']);
             $_SESSION['success'] = "Category added successfully.";
@@ -58,7 +52,6 @@ if (isset($_POST['submit'])) {
             throw new Exception("Failed to insert category.");
         }
     } catch (Exception $e) {
-        // Rollback transaction on error
         mysqli_rollback($conn);
         $_SESSION['error'] = "Failed to add category. Please try again.";
         header("Location: create.php");

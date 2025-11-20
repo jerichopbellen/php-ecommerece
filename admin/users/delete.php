@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 require_once '../../includes/config.php';
 
-// Check if user ID is provided and sanitize input
 if (!isset($_GET['id']) || !filter_var($_GET['id'], FILTER_VALIDATE_INT) || $_GET['id'] <= 0) {
     $_SESSION['error'] = "Invalid user ID provided";
     header('Location: index.php');
@@ -18,7 +17,6 @@ if (!isset($_GET['id']) || !filter_var($_GET['id'], FILTER_VALIDATE_INT) || $_GE
 
 $user_id = (int)$_GET['id'];
 
-// Prevent admin from deleting themselves
 if ($user_id === $_SESSION['user_id']) {
     $_SESSION['error'] = "Cannot delete your own account.";
     header('Location: index.php');
@@ -26,10 +24,8 @@ if ($user_id === $_SESSION['user_id']) {
 }
 
 try {
-    // Start transaction
     $conn->begin_transaction();
 
-    // Check if user is an admin
     $adminCheckStmt = $conn->prepare("SELECT role FROM users WHERE user_id = ?");
     $adminCheckStmt->bind_param("i", $user_id);
     $adminCheckStmt->execute();
@@ -45,7 +41,6 @@ try {
         throw new Exception("Cannot delete admin users.");
     }
 
-    // Check if user has active orders
     $checkStmt = $conn->prepare("
         SELECT COUNT(*) as order_count 
         FROM orders 
@@ -61,7 +56,6 @@ try {
         throw new Exception("Cannot delete user with active orders.");
     }
 
-    // Soft delete: flag user, timestamp, anonymize email and name
     $stmt = $conn->prepare("
         UPDATE users 
         SET 
@@ -81,18 +75,15 @@ try {
     }
     $stmt->close();
 
-    // Delete cart items
     $cartStmt = $conn->prepare("DELETE FROM cart_items WHERE user_id = ?");
     $cartStmt->bind_param("i", $user_id);
     $cartStmt->execute();
     $cartStmt->close();
 
-    // Commit transaction
     $conn->commit();
     $_SESSION['success'] = "User deleted successfully.";
 
 } catch (Exception $e) {
-    // Rollback transaction on error
     $conn->rollback();
     $_SESSION['error'] = $e->getMessage();
 }

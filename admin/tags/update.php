@@ -9,11 +9,9 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 include '../../includes/config.php';
 
-// Input sanitization
 $tag_id = filter_input(INPUT_POST, 'tag_id', FILTER_VALIDATE_INT);
 $name = trim($_POST['name'] ?? '');
 
-// Start transaction
 mysqli_begin_transaction($conn);
 
 if(isset($_POST['submit'])) {
@@ -27,7 +25,6 @@ if(isset($_POST['submit'])) {
     }
 }
 try {
-    // Check if tag name already exists (excluding current tag)
     $check_stmt = mysqli_prepare($conn, "SELECT tag_id FROM tags WHERE name = ? AND tag_id != ?");
     mysqli_stmt_bind_param($check_stmt, "si", $name, $tag_id);
     mysqli_stmt_execute($check_stmt);
@@ -39,7 +36,6 @@ try {
     }
     mysqli_stmt_close($check_stmt);
     
-    // Update tag using prepared statement
     $update_stmt = mysqli_prepare($conn, "UPDATE tags SET name = ? WHERE tag_id = ?");
     mysqli_stmt_bind_param($update_stmt, "si", $name, $tag_id);
     
@@ -50,7 +46,6 @@ try {
     
     mysqli_stmt_close($update_stmt);
     
-    // Commit transaction
     mysqli_commit($conn);
     unset($_SESSION['tagName']);
     $_SESSION['success'] = "Tag updated successfully.";
@@ -58,7 +53,6 @@ try {
     exit;
     
 } catch (Exception $e) {
-    // Rollback on error
     mysqli_rollback($conn);
     
     $_SESSION['error'] = $e->getMessage();

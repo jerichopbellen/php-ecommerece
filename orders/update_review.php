@@ -8,7 +8,6 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Input sanitization
 $user_id    = intval($_SESSION['user_id']);
 $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
 $order_id   = isset($_POST['order_id']) ? intval($_POST['order_id']) : 0;
@@ -16,23 +15,19 @@ $variant_id = isset($_POST['variant_id']) ? intval($_POST['variant_id']) : 0;
 $rating     = isset($_POST['rating']) ? intval($_POST['rating']) : 0;
 $comment    = isset($_POST['comment']) ? trim($_POST['comment']) : '';
 
-// Validate inputs
 if ($product_id <= 0 || $variant_id <= 0 || $rating < 1 || $rating > 5) {
     $_SESSION['error'] = "Invalid review data provided.";
     header("Location: order_history.php");
     exit;
 }
 
-// Sanitize comment length
 $comment = substr($comment, 0, 1000);
 
-// Define foul words
 $badWords = [
     'fuck', 'shit', 'bitch', 'asshole', 'bastard', 'damn', 'crap',
     'tangina', 'putangina', 'bobo', 'tanga', 'gago', 'ulol'
 ];
 
-// Apply regex masking (case-insensitive with /i flag)
 foreach ($badWords as $word) {
     $pattern = '/\b' . preg_quote($word, '/') . '\b/i';
     $comment = preg_replace_callback($pattern, function($matches) {
@@ -40,11 +35,9 @@ foreach ($badWords as $word) {
     }, $comment);
 }
 
-// Start transaction
 mysqli_begin_transaction($conn);
 
 try {
-    // Check if review exists (using prepared statement)
     $check_sql = "SELECT review_id FROM reviews WHERE user_id = ? AND product_id = ? AND variant_id = ?";
     $check_stmt = mysqli_prepare($conn, $check_sql);
     mysqli_stmt_bind_param($check_stmt, "iii", $user_id, $product_id, $variant_id);

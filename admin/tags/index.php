@@ -29,11 +29,9 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Input sanitization
 $keyword = isset($_GET['search']) ? trim($_GET['search']) : '';
 $keyword = filter_var($keyword, FILTER_SANITIZE_STRING);
 
-// Prepared statement for SELECT query
 if ($keyword !== '' && $keyword !== false) {
     $sql = "SELECT * FROM tags WHERE name LIKE ? ORDER BY name ASC";
     $stmt = mysqli_prepare($conn, $sql);

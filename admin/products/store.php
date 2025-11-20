@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 include '../../includes/config.php';
 
-// store form data in session to repopulate in case of error
 $_SESSION['productName'] = $_POST['name'];
 $_SESSION['description'] = $_POST['description'];
 $_SESSION['brand'] = $_POST['brand'];   
@@ -19,7 +18,6 @@ $_SESSION['width'] = $_POST['width'];
 $_SESSION['height'] = $_POST['height'];
 
 if (isset($_POST['submit'])) {
-    // Input sanitization
     $name = htmlspecialchars(trim($_POST['name'] ?? ''), ENT_QUOTES, 'UTF-8');
     $description = htmlspecialchars(trim($_POST['description'] ?? ''), ENT_QUOTES, 'UTF-8');
     $brand = filter_var($_POST['brand'] ?? '', FILTER_VALIDATE_INT);
@@ -27,10 +25,8 @@ if (isset($_POST['submit'])) {
     $length = filter_var($_POST['length'] ?? '', FILTER_VALIDATE_FLOAT);
     $width = filter_var($_POST['width'] ?? '', FILTER_VALIDATE_FLOAT);
     $height = filter_var($_POST['height'] ?? '', FILTER_VALIDATE_FLOAT);
-    // Construct dimension string
     $dimension = $length . ' x ' . $width . ' x ' . $height . ' cm';
 
-    // Validate required fields
     if(empty($name)) {
         $_SESSION['nameError'] = "Please input a product name.";
         header("Location: create.php");
@@ -58,11 +54,9 @@ if (isset($_POST['submit'])) {
         exit;
     }
 
-    // Start transaction
     mysqli_begin_transaction($conn);
 
     try {
-        // Insert into database using prepared statement
         $sql = "INSERT INTO products (name, description, brand_id, category_id, dimension) VALUES (?, ?, ?, ?, ?)";
         $stmt = mysqli_prepare($conn, $sql);
         mysqli_stmt_bind_param($stmt, 'ssiis', $name, $description, $brand, $category, $dimension);
@@ -73,10 +67,8 @@ if (isset($_POST['submit'])) {
         
         mysqli_stmt_close($stmt);
         
-        // Commit transaction
         mysqli_commit($conn);
 
-        // Clear form data from session after successful insertion
         foreach (['productName','description','brand','category','length','width','height'] as $field) {
         unset($_SESSION[$field]);
         }
@@ -86,7 +78,6 @@ if (isset($_POST['submit'])) {
         exit;
         
     } catch (Exception $e) {
-        // Rollback on error
         mysqli_rollback($conn);
         
         $_SESSION['error'] = 'Failed to create product. Please try again.';

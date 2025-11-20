@@ -7,7 +7,6 @@ if (!isset($_SESSION['user_id']) || !isset($_POST['order_id'])) {
     exit;
 }
 
-// Input sanitization
 $order_id = filter_input(INPUT_POST, 'order_id', FILTER_VALIDATE_INT);
 $user_id = filter_var($_SESSION['user_id'], FILTER_VALIDATE_INT);
 
@@ -17,11 +16,9 @@ if ($order_id === false || $user_id === false || $order_id <= 0 || $user_id <= 0
     exit;
 }
 
-// Start transaction
 mysqli_begin_transaction($conn);
 
 try {
-    // Check if order is still cancelable (using prepared statement)
     $check_sql = "SELECT status FROM orders WHERE order_id = ? AND user_id = ?";
     $check_stmt = mysqli_prepare($conn, $check_sql);
     mysqli_stmt_bind_param($check_stmt, "ii", $order_id, $user_id);
@@ -30,13 +27,11 @@ try {
     $order = mysqli_fetch_assoc($result);
 
     if ($order && in_array($order['status'], ['Pending', 'Processing'])) {
-        // Cancel order (using prepared statement)
         $cancel_sql = "UPDATE orders SET status = 'Cancelled', cancelled_at = NOW() WHERE order_id = ?";
         $cancel_stmt = mysqli_prepare($conn, $cancel_sql);
         mysqli_stmt_bind_param($cancel_stmt, "i", $order_id);
         mysqli_stmt_execute($cancel_stmt);
         
-        // Commit transaction
         mysqli_commit($conn);
         $_SESSION['success'] = 'Order cancelled successfully.';
     } else {
@@ -44,7 +39,6 @@ try {
         $_SESSION['error'] = 'Order cannot be cancelled.';
     }
 } catch (Exception $e) {
-    // Rollback on error
     mysqli_rollback($conn);
     $_SESSION['error'] = 'An error occurred while cancelling the order.';
 }

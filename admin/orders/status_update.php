@@ -44,7 +44,6 @@ function generateTrackingNumber($conn) {
     return $tracking_number;
 }
 
-// Fetch current status using prepared statement
 $stmt = mysqli_prepare($conn, "SELECT status FROM orders WHERE order_id = ?");
 mysqli_stmt_bind_param($stmt, "i", $order_id);
 mysqli_stmt_execute($stmt);
@@ -56,17 +55,14 @@ if (!$res || mysqli_num_rows($res) === 0) {
 $currentStatus = strtolower(mysqli_fetch_assoc($res)['status']);
 mysqli_stmt_close($stmt);
 
-// Define transition that requires stock deduction
 $requiresStockDeduction = ($currentStatus === 'processing' && $newStatus === 'shipped');
 
-// If no stock deduction needed, just update
 if (!$requiresStockDeduction) {
     $stmt = mysqli_prepare($conn, "UPDATE orders SET status = ? WHERE order_id = ?");
     mysqli_stmt_bind_param($stmt, "si", $newStatus, $order_id);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
 
-    // Send status update email
     $details = buildOrderDetailsHtml($conn, $order_id);
     $meta    = $details['meta'];
     $items   = $details['html'];
@@ -102,7 +98,6 @@ if (!$requiresStockDeduction) {
     redirect_with_msg($order_id, 'status_updated');
 }
 
-// Begin stock deduction transaction
 mysqli_begin_transaction($conn);
 
 try {
@@ -121,7 +116,6 @@ try {
     }
     mysqli_stmt_close($stmt);
 
-    // Prepare stock update statement
     $update_stmt = mysqli_prepare($conn, "
         UPDATE stocks 
         SET quantity = quantity - ? 
@@ -145,7 +139,6 @@ try {
     }
     mysqli_stmt_close($update_stmt);
 
-    // Generate tracking number and update order
     $tracking_number = generateTrackingNumber($conn);
     $order_stmt = mysqli_prepare($conn, "
         UPDATE orders 
@@ -158,7 +151,6 @@ try {
 
     mysqli_commit($conn);
 
-    // Send status update email
     $details = buildOrderDetailsHtml($conn, $order_id);
     $meta    = $details['meta'];
     $items   = $details['html'];

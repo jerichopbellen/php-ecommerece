@@ -14,12 +14,10 @@ $product_id = isset($_GET['product_id']) ? intval($_GET['product_id']) : 0;
 $order_id = isset($_GET['order_id']) ? intval($_GET['order_id']) : 0;
 $variant_id = isset($_GET['variant_id']) ? intval($_GET['variant_id']) : 0;
 
-// Validate inputs
 if ($product_id <= 0 || $order_id <= 0) {
   die("Invalid parameters.");
 }
 
-// Fetch product, image, variant, and existing review using prepared statement
 $stmt = mysqli_prepare($conn, "
   SELECT 
     p.name,
@@ -51,7 +49,6 @@ if (!$product) {
   die("Product not found.");
 }
 
-// Format variant label
 $color = isset($product['color']) ? trim($product['color']) : '';
 $material = isset($product['material']) ? trim($product['material']) : '';
 if ($color && $material) {
@@ -64,7 +61,6 @@ if ($color && $material) {
   $variant_label = "N/A";
 }
 
-// Pre-fill review data
 $existing_rating = intval($product['rating'] ?? 0);
 $existing_comment = htmlspecialchars($product['comment'] ?? '', ENT_QUOTES, 'UTF-8');
 ?>

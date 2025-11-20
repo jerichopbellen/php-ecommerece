@@ -3,12 +3,10 @@ session_start();
 include('./includes/header.php');
 include('./includes/config.php');
 
-// --- Input Sanitization Function ---
 function sanitize_input($data) {
     return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
 }
 
-// --- Search handling ---
 $keyword = isset($_GET['search']) ? sanitize_input($_GET['search']) : '';
 
 if ($keyword !== '') {
@@ -154,7 +152,6 @@ if ($keyword !== '') {
     </div>
 <?php
 } else {
-    // Get filter parameters with sanitization
     $selected_category = isset($_GET['category']) && $_GET['category'] !== '' ? intval($_GET['category']) : 0;
     $selected_brand = isset($_GET['brand']) && $_GET['brand'] !== '' ? intval($_GET['brand']) : 0;
     $selected_material = isset($_GET['material']) ? sanitize_input($_GET['material']) : '';
@@ -164,7 +161,6 @@ if ($keyword !== '') {
     $min_price = isset($_GET['min_price']) && $_GET['min_price'] !== '' ? max(0, floatval($_GET['min_price'])) : null;
     $max_price = isset($_GET['max_price']) && $_GET['max_price'] !== '' ? max(0, floatval($_GET['max_price'])) : null;
     
-    // Validate availability filter
     if ($selected_availability !== '' && !in_array($selected_availability, ['in_stock', 'out_of_stock'])) {
         $selected_availability = '';
     }
@@ -333,11 +329,8 @@ if ($keyword !== '') {
                 </div>
             </div>
 
-
-            <!-- Products Grid -->
             <div class="col-lg-9">
                 <?php
-                // Build product query with filters
                 $where_conditions = [];
                 $params = [];
                 $param_types = "";

@@ -29,7 +29,6 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Input sanitization
 $order_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if ($order_id <= 0) {
@@ -38,7 +37,6 @@ if ($order_id <= 0) {
     exit;
 }
 
-// Fetch order details with address using prepared statement
 $sql = "
     SELECT 
         o.order_id,
@@ -136,22 +134,18 @@ mysqli_stmt_close($stmt);
                     $selected = ($currentStatus === $status) ? 'selected' : '';
                     $disabledOption = '';
 
-                    // Disable all previous statuses
                     if ($statusOrder[$status] < $currentIndex && $status !== $currentStatus) {
                         $disabledOption = 'disabled';
                     }
 
-                    // Disable statuses more than one step ahead
                     if ($statusOrder[$status] > $currentIndex + 1 && $status !== 'cancelled') {
                         $disabledOption = 'disabled';
                     }
 
-                    // Disable 'cancelled' if already shipped or later
                     if ($status === 'cancelled' && $statusOrder[$currentStatus] >= $statusOrder['shipped']) {
                         $disabledOption = 'disabled';
                     }
 
-                    // Always disable 'received' (only customers can mark as received)
                     if ($status === 'received') {
                         $disabledOption = 'disabled';
                     }

@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Fetch current profile
 $userId = filter_var($_SESSION['user_id'], FILTER_VALIDATE_INT);
 if (!$userId) {
     die("Invalid user ID");
@@ -30,7 +29,6 @@ if (!$profile) {
     die("Profile not found");
 }
 
-// Fetch saved addresses
 $addresses = [];
 $address_sql = "SELECT address_id, recipient, street, barangay, city, province, zipcode, country, phone FROM addresses WHERE user_id = ?";
 $stmt = mysqli_prepare($conn, $address_sql);
@@ -48,7 +46,6 @@ mysqli_stmt_close($stmt);
 <div class="container my-5">
     <?php include("../includes/alert.php"); ?>
     <div class="row g-4">
-        <!-- Profile Picture -->
         <div class="col-lg-4">
             <div class="card shadow-sm">
                 <div class="card-body text-center">
@@ -64,7 +61,6 @@ mysqli_stmt_close($stmt);
 
                     <h4><?= htmlspecialchars($profile['first_name'], ENT_QUOTES, 'UTF-8') ?> <?= htmlspecialchars($profile['last_name'], ENT_QUOTES, 'UTF-8') ?></h4>
 
-                    <!-- Upload Form -->
                     <form method="POST" action="update_profile.php" enctype="multipart/form-data" novalidate>
                         <small class="text-danger">
                             <?php if(isset($_SESSION['imageError'])) { echo htmlspecialchars($_SESSION['imageError']); unset($_SESSION['imageError']); } ?>
@@ -75,7 +71,6 @@ mysqli_stmt_close($stmt);
                         </button>
                     </form>
 
-                    <!-- Remove Form -->
                     <form method="POST" action="update_profile.php" class="mt-2" novalidate>
                         <button type="submit" name="remove_avatar" class="btn btn-outline-danger btn-sm w-100" onclick="return confirm('Remove your profile picture?');">
                             <i class="bi bi-trash me-1"></i> Remove Profile Picture
@@ -84,7 +79,6 @@ mysqli_stmt_close($stmt);
                 </div>
             </div>
         </div>
-             <!-- Profile Info -->
         <div class="col-lg-8">
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
@@ -123,7 +117,6 @@ mysqli_stmt_close($stmt);
                 </div>
             </div>
 
-            <!-- Change Password -->
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h4 class="mb-4"><i class="bi bi-key me-2"></i>Change Password</h4>
@@ -158,7 +151,6 @@ mysqli_stmt_close($stmt);
         </div>
     </div>
 
-    <!-- Saved Addresses -->
     <div class="row mt-5">
         <div class="col-lg-12">
             <div class="card shadow-sm">
@@ -209,7 +201,6 @@ mysqli_stmt_close($stmt);
         </div>
     </div>
 
-    <!-- Add Address -->
     <div class="row mt-4">
         <div class="col-lg-12">
             <div class="card shadow-sm">

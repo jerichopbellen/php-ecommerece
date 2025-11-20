@@ -29,17 +29,14 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Input sanitization
 $keyword = isset($_GET['search']) ? trim($_GET['search']) : '';
 $statusFilter = isset($_GET['status']) ? strtolower(trim($_GET['status'])) : '';
 
-// Whitelist validation for status
 $allowedStatuses = ['pending', 'processing', 'shipped', 'delivered', 'received', 'cancelled'];
 if ($statusFilter && !in_array($statusFilter, $allowedStatuses)) {
     $statusFilter = '';
 }
 
-// Build query with prepared statement
 $sql = "
     SELECT 
         order_id,
@@ -80,7 +77,6 @@ if ($conditions) {
 
 $sql .= " GROUP BY order_id ORDER BY created_at DESC";
 
-// Prepare and execute statement
 $stmt = mysqli_prepare($conn, $sql);
 if ($stmt === false) {
     die("Error preparing statement: " . mysqli_error($conn));

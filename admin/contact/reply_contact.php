@@ -8,26 +8,21 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 include '../../includes/config.php';
 
-// Input sanitization
 $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
 $reply = trim($_POST['reply'] ?? '');
 
-// Validate inputs
 if (!$id || $id <= 0 || empty($reply)) {
     $_SESSION['error'] = "Invalid input provided.";
     header("Location: index.php?msg=invalid");
     exit;
 }
 
-// Sanitize reply (remove script tags, keep line breaks)
 $reply = strip_tags($reply);
 $reply = htmlspecialchars($reply, ENT_QUOTES, 'UTF-8');
 
-// Begin transaction
 mysqli_begin_transaction($conn);
 
 try {
-    // Prepared statement
     $sql = "UPDATE contact_messages SET reply = ?, replied_at = NOW() WHERE id = ?";
     $stmt = mysqli_prepare($conn, $sql);
     
@@ -41,14 +36,12 @@ try {
         throw new Exception("Failed to execute statement");
     }
     
-    // Check if any row was actually updated
     if (mysqli_stmt_affected_rows($stmt) === 0) {
         throw new Exception("No message found with that ID");
     }
     
     mysqli_stmt_close($stmt);
     
-    // Commit transaction
     mysqli_commit($conn);
     
     $_SESSION['success'] = "Reply sent successfully.";
@@ -56,8 +49,7 @@ try {
     exit;
     
 } catch (Exception $e) {
-    // Rollback on error
-    mysqli_rollback($conn);
+    mysqli_rollback(mysql: $conn);
     
     $_SESSION['error'] = "Failed to send reply. Please try again.";
     header("Location: index.php?msg=error");

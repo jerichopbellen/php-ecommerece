@@ -3,7 +3,6 @@ session_start();
 include('./includes/header.php');
 include('./includes/config.php');
 
-// Input sanitization
 $product_id = isset($_GET['product_id']) ? filter_var($_GET['product_id'], FILTER_VALIDATE_INT) : 0;
 
 if ($product_id === false || $product_id <= 0) {
@@ -12,11 +11,9 @@ if ($product_id === false || $product_id <= 0) {
     exit;
 }
 
-// Begin transaction for read consistency
 mysqli_begin_transaction($conn);
 
 try {
-    // Fetch product details using prepared statement
     $stmt = mysqli_prepare($conn, "SELECT 
                 p.product_id,
                 p.name AS product_name,
@@ -52,7 +49,6 @@ try {
         exit;
     }
 
-    // Fetch all product images
     $stmt = mysqli_prepare($conn, "SELECT img_path FROM product_images WHERE product_id = ? ORDER BY image_id ASC");
     mysqli_stmt_bind_param($stmt, "i", $product_id);
     mysqli_stmt_execute($stmt);
@@ -63,7 +59,6 @@ try {
     }
     mysqli_stmt_close($stmt);
 
-    // Fetch variants
     $stmt = mysqli_prepare($conn, "SELECT 
                     v.variant_id,
                     v.color,
@@ -77,7 +72,6 @@ try {
     mysqli_stmt_execute($stmt);
     $variant_result = mysqli_stmt_get_result($stmt);
     
-    // Calculate total stock
     $total_stock = 0;
     $variants = [];
     while ($variant = mysqli_fetch_assoc($variant_result)) {
@@ -86,7 +80,6 @@ try {
     }
     mysqli_stmt_close($stmt);
 
-    // Fetch reviews
     $stmt = mysqli_prepare($conn, "SELECT 
                     u.first_name,
                     u.last_name,
@@ -106,7 +99,6 @@ try {
     $review_result = mysqli_stmt_get_result($stmt);
     mysqli_stmt_close($stmt);
 
-    // Fetch tags
     $stmt = mysqli_prepare($conn, "SELECT t.name 
         FROM product_tags pt
         INNER JOIN tags t ON pt.tag_id = t.tag_id
@@ -121,7 +113,6 @@ try {
     }
     mysqli_stmt_close($stmt);
 
-    // Commit transaction
     mysqli_commit($conn);
 
 } catch (Exception $e) {

@@ -11,7 +11,6 @@ include '../../includes/config.php';
 
 if (isset($_POST['submit'])) {
 
-    // Input sanitization
     $brand_name = trim($_POST['name']);
     $brand_id = filter_var($_POST['brand_id'], FILTER_VALIDATE_INT);
 
@@ -22,11 +21,9 @@ if (isset($_POST['submit'])) {
         exit;
     }
 
-    // Start transaction
     mysqli_begin_transaction($conn);
 
     try {
-        // Check if brand name already exists (excluding current brand)
         $check_stmt = mysqli_prepare($conn, "SELECT brand_id FROM brands WHERE name = ? AND brand_id != ?");
         mysqli_stmt_bind_param($check_stmt, "si", $brand_name, $brand_id);
         mysqli_stmt_execute($check_stmt);
@@ -38,7 +35,6 @@ if (isset($_POST['submit'])) {
         }
         mysqli_stmt_close($check_stmt);
         
-        // Update brand
         $update_stmt = mysqli_prepare($conn, "UPDATE brands SET name = ? WHERE brand_id = ?");
         mysqli_stmt_bind_param($update_stmt, "si", $brand_name, $brand_id);
         
@@ -48,14 +44,12 @@ if (isset($_POST['submit'])) {
         
         mysqli_stmt_close($update_stmt);
         
-        // Commit transaction
         mysqli_commit($conn);
         $_SESSION['success'] = "Brand updated successfully.";
         header("Location: index.php");
         exit;
         
     } catch (Exception $e) {
-        // Rollback on error
         mysqli_rollback($conn);
         $_SESSION['error'] = $e->getMessage();
         header("Location: edit.php?id={$brand_id}");

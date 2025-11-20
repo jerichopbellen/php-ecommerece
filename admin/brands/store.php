@@ -10,23 +10,19 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 include '../../includes/config.php';
 
 if (isset($_POST['submit'])) {
-    // Input sanitization
     $_SESSION['brandName'] = $_POST['name'];
     $name = trim($_POST['name']);
     $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
     
-    // Validate input
     if (empty($name)) {
         $_SESSION['nameError'] = "Brand name cannot be empty.";
         header("Location: create.php");
         exit;
     }
     
-    // Start transaction
     mysqli_begin_transaction($conn);
     
     try {
-        // Check if brand name already exists using prepared statement
         $check_sql = "SELECT brand_id FROM brands WHERE name = ?";
         $check_stmt = mysqli_prepare($conn, $check_sql);
         mysqli_stmt_bind_param($check_stmt, "s", $name);
@@ -42,7 +38,6 @@ if (isset($_POST['submit'])) {
         }
         mysqli_stmt_close($check_stmt);
         
-        // Insert brand using prepared statement
         $sql = "INSERT INTO brands (name) VALUES (?)";
         $stmt = mysqli_prepare($conn, $sql);
         mysqli_stmt_bind_param($stmt, "s", $name);

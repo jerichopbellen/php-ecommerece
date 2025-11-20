@@ -19,7 +19,6 @@ $_SESSION['height'] = $_POST['height'] ?? '';
 
 if (isset($_POST['submit'])) { 
 
-    // Sanitize and validate inputs
     $product_id = filter_var($_POST['product_id'] ?? 0, FILTER_VALIDATE_INT);
     $name = htmlspecialchars(trim($_POST['productName'] ?? ''), ENT_QUOTES, 'UTF-8');
     $description = htmlspecialchars(trim($_POST['description'] ?? ''), ENT_QUOTES, 'UTF-8');
@@ -32,7 +31,6 @@ if (isset($_POST['submit'])) {
 
     $dimension = "{$length} x {$width} x {$height} cm";
 
-    // Validate required fields
     if(empty($name)) {
         $_SESSION['nameError'] = "Please input a product name.";
         header("Location: edit.php?id={$product_id}");
@@ -60,11 +58,9 @@ if (isset($_POST['submit'])) {
         exit;
     }
 
-    // Start transaction
     mysqli_begin_transaction($conn);
 
     try {
-        // Update query using prepared statement
         $sql = "UPDATE products 
                 SET name = ?, description = ?, brand_id = ?, category_id = ?, dimension = ?
                 WHERE product_id = ?";
@@ -78,10 +74,8 @@ if (isset($_POST['submit'])) {
         
         mysqli_stmt_close($stmt);
         
-        // Commit transaction
         mysqli_commit($conn);
 
-        // Clear error messages after successful update
         unset($_SESSION['productName']);
         unset($_SESSION['description']);    
         unset($_SESSION['brand']);
@@ -95,7 +89,6 @@ if (isset($_POST['submit'])) {
         exit;
         
     } catch (Exception $e) {
-        // Rollback on error
         mysqli_rollback($conn);
         
         $_SESSION['error'] = "Update failed.";

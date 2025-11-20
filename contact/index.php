@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_id'])) {
 include '../includes/config.php';
 include '../includes/header.php';
 
-// Fetch user info from database using prepared statement
 $user_id = filter_var($_SESSION['user_id'], FILTER_VALIDATE_INT);
 if (!$user_id) {
     die("Invalid user ID");

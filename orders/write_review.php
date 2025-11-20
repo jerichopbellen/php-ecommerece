@@ -9,17 +9,14 @@ if (!isset($_SESSION['user_id'])) {
   exit;
 }
 
-// Input sanitization
 $product_id = filter_input(INPUT_GET, 'product_id', FILTER_VALIDATE_INT);
 $order_id = filter_input(INPUT_GET, 'order_id', FILTER_VALIDATE_INT);
 $variant_id = filter_input(INPUT_GET, 'variant_id', FILTER_VALIDATE_INT) ?: 0;
 
-// Validate inputs
 if (!$product_id || !$order_id) {
   die("Invalid product or order ID.");
 }
 
-// Fetch product name, image, and variant details using prepared statement
 $stmt = mysqli_prepare($conn, "
   SELECT 
     p.name,
@@ -49,7 +46,6 @@ if (!$product) {
   die("Product not found.");
 }
 
-// Format variant label
 $variant_label = '';
 if (!empty($product['color']) || !empty($product['material'])) {
   $color = trim($product['color']);

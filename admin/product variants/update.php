@@ -11,19 +11,16 @@ include '../../includes/config.php';
 
 $variant_id = intval($_POST['variant_id']);
 
-// Sanitize inputs
 $color      = htmlspecialchars(trim($_POST['color'] ?? ''), ENT_QUOTES, 'UTF-8');
 $material   = htmlspecialchars(trim($_POST['material'] ?? ''), ENT_QUOTES, 'UTF-8');
 $sell_price = filter_var(trim($_POST['sell_price'] ?? ''), FILTER_VALIDATE_FLOAT);
 $quantity   = filter_var(trim($_POST['quantity'] ?? ''), FILTER_VALIDATE_INT);
 
-// Persist values in session for repopulation
 $_SESSION['color']      = $_POST['color'];
 $_SESSION['material']   = $_POST['material'];
 $_SESSION['sell_price'] = $_POST['sell_price'];
 $_SESSION['quantity']   = $_POST['quantity'];
 
-// Validation
 if ($color === '' && $material === '') {
     $_SESSION['variantError'] = 'Please input at least a color or a material.';
     header("Location: edit.php?id={$variant_id}");
@@ -42,17 +39,14 @@ if ($quantity === false || $quantity < 0) {
     exit();
 }
 
-// Begin transaction
 mysqli_begin_transaction($conn);
 
 try {
-    // Update product_variants
     $stmt1 = $conn->prepare("UPDATE product_variants SET color=?, material=?, price=? WHERE variant_id=?");
     $stmt1->bind_param("ssdi", $color, $material, $sell_price, $variant_id);
     $result1 = $stmt1->execute();
     $stmt1->close();
 
-    // Update stocks
     $stmt2 = $conn->prepare("UPDATE stocks SET quantity=? WHERE variant_id=?");
     $stmt2->bind_param("ii", $quantity, $variant_id);
     $result2 = $stmt2->execute();
@@ -61,7 +55,6 @@ try {
     if ($result1 && $result2) {
         mysqli_commit($conn);
 
-        // Clear session values after success
         foreach (['color','material','sell_price','quantity'] as $field) {
             unset($_SESSION[$field]);
         }

@@ -29,7 +29,6 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Input sanitization
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
 if ($id === false || $id === null) {
@@ -38,7 +37,6 @@ if ($id === false || $id === null) {
     exit;
 }
 
-// Prepared statement for product query
 $stmt = mysqli_prepare($conn, "
     SELECT 
         p.product_id, 
@@ -72,21 +70,18 @@ if (!$product) {
     exit;
 }
 
-// Prepared statement for brands query
 $stmt = mysqli_prepare($conn, "SELECT brand_id, name FROM brands WHERE brand_id != ? ORDER BY name");
 mysqli_stmt_bind_param($stmt, "i", $product['brand_id']);
 mysqli_stmt_execute($stmt);
 $brands = mysqli_stmt_get_result($stmt);
 mysqli_stmt_close($stmt);
 
-// Prepared statement for categories query
 $stmt = mysqli_prepare($conn, "SELECT category_id, name FROM categories WHERE category_id != ? ORDER BY name");
 mysqli_stmt_bind_param($stmt, "i", $product['category_id']);
 mysqli_stmt_execute($stmt);
 $categories = mysqli_stmt_get_result($stmt);
 mysqli_stmt_close($stmt);
 
-// Parse dimension into length, width, height
 $length = $width = $height = '';
 if (!empty($product['dimension']) && preg_match('/(\d+(\.\d+)?)\s*x\s*(\d+(\.\d+)?)\s*x\s*(\d+(\.\d+)?)/', $product['dimension'], $matches)) {
     $length = $matches[1];
@@ -107,21 +102,18 @@ if (!empty($product['dimension']) && preg_match('/(\d+(\.\d+)?)\s*x\s*(\d+(\.\d+
                     <form action="update.php" method="POST">
                         <input type="hidden" name="product_id" value="<?=htmlspecialchars($product['product_id'], ENT_QUOTES, 'UTF-8') ?>">
 
-                        <!-- Product Name -->
                         <div class="mb-3">
                             <label for="productName" class="form-label">Product Name</label>
                             <small class="text-danger"><?php if (isset($_SESSION['nameError'])) { echo $_SESSION['nameError']; unset($_SESSION['nameError']); } ?></small>
                             <input type="text" class="form-control" id="productName" name="productName" value="<?=htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8') ?>">
                         </div>
 
-                        <!-- Description -->
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
                                     <small class="text-danger"><?php if (isset($_SESSION['descriptionError'])) { echo $_SESSION['descriptionError']; unset($_SESSION['descriptionError']); } ?></small>
                             <input type="text" class="form-control" id="description" name="description" value="<?= htmlspecialchars($product['description'], ENT_QUOTES, 'UTF-8') ?>">
                         </div>
 
-                        <!-- Brand -->
                         <div class="mb-3">
                             <label for="brand" class="form-label">Brand</label>
                             <small class="text-danger"><?php if (isset($_SESSION['brandError'])) { echo $_SESSION['brandError']; unset($_SESSION['brandError']); } ?></small>
@@ -133,7 +125,6 @@ if (!empty($product['dimension']) && preg_match('/(\d+(\.\d+)?)\s*x\s*(\d+(\.\d+
                             </select>
                         </div>
 
-                        <!-- Category -->
                         <div class="mb-3">
                             <label for="category" class="form-label">Category</label>
                             <small class="text-danger"><?php if (isset($_SESSION['categoryError'])) { echo $_SESSION['categoryError']; unset($_SESSION['categoryError']); } ?></small>
@@ -145,7 +136,6 @@ if (!empty($product['dimension']) && preg_match('/(\d+(\.\d+)?)\s*x\s*(\d+(\.\d+
                             </select>
                         </div>
 
-                        <!-- Dimensions -->
                         <div class="mb-3">
                             <label class="form-label">Dimensions (cm)</label>
                             <small class="text-danger"><?php if (isset($_SESSION['dimensionError'])) { echo $_SESSION['dimensionError']; unset($_SESSION['dimensionError']); } ?></small>
@@ -162,7 +152,6 @@ if (!empty($product['dimension']) && preg_match('/(\d+(\.\d+)?)\s*x\s*(\d+(\.\d+
                             </div>
                         </div>
 
-                        <!-- Actions -->
                         <div class="d-flex justify-content-between">
                             <button type="submit" class="btn btn-primary" name="submit" value="submit">
                                 <i class="bi bi-check-circle me-1"></i>Update

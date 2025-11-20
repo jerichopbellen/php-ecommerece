@@ -11,12 +11,11 @@ include '../../includes/config.php';
 
 $image_id = (int) $_POST['image_id'];
 $alt_text = htmlspecialchars(trim($_POST['alt_text'] ?? ''), ENT_QUOTES, 'UTF-8');
-$path     = trim($_POST['existingImage']); // fallback to existing image path
+$path     = trim($_POST['existingImage']); 
 
-// Persist values in session
+
 $_SESSION['alt_text'] = $_POST['alt_text'];
 
-// Validation
 if ($alt_text === '') {
     $_SESSION['altError'] = "Alt text is required.";
     header("Location: edit.php?id={$image_id}");
@@ -45,7 +44,6 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
     }
 }
 
-// Begin transaction
 mysqli_begin_transaction($conn);
 
 try {
@@ -55,7 +53,6 @@ try {
     if ($stmt->execute()) {
         mysqli_commit($conn);
 
-        // Clear session values
         foreach (['alt_text'] as $field) {
             unset($_SESSION[$field]);
         }

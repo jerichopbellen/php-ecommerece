@@ -29,12 +29,10 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Fetch products
 $stmt_products = mysqli_prepare($conn, "SELECT product_id, name FROM products ORDER BY name ASC");
 mysqli_stmt_execute($stmt_products);
 $products = mysqli_stmt_get_result($stmt_products);
 
-// Fetch tags
 $stmt_tags = mysqli_prepare($conn, "SELECT tag_id, name FROM tags ORDER BY name ASC");
 mysqli_stmt_execute($stmt_tags);
 $tags = mysqli_stmt_get_result($stmt_tags);

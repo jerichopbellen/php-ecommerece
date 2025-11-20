@@ -11,7 +11,6 @@ include '../../includes/config.php';
 
 if (isset($_POST['submit'])) {
 
-    // Input sanitization
     $name = trim($_POST['category_name']);
     $category_id = (int)$_POST['category_id'];
 
@@ -21,11 +20,9 @@ if (isset($_POST['submit'])) {
         exit;
     }
 
-    // Start transaction
     mysqli_begin_transaction($conn);
 
     try {
-        // Check if category name already exists (excluding current category)
         $check_stmt = mysqli_prepare($conn, "SELECT category_id FROM categories WHERE name = ? AND category_id != ?");
         mysqli_stmt_bind_param($check_stmt, "si", $name, $category_id);
         mysqli_stmt_execute($check_stmt);
@@ -37,7 +34,6 @@ if (isset($_POST['submit'])) {
         }
         mysqli_stmt_close($check_stmt);
         
-        // Update category
         $update_stmt = mysqli_prepare($conn, "UPDATE categories SET name = ? WHERE category_id = ?");
         mysqli_stmt_bind_param($update_stmt, "si", $name, $category_id);
         
@@ -48,7 +44,6 @@ if (isset($_POST['submit'])) {
         
         mysqli_stmt_close($update_stmt);
         
-        // Commit transaction
         mysqli_commit($conn);
         
         $_SESSION['success'] = "Category updated successfully.";
@@ -56,7 +51,6 @@ if (isset($_POST['submit'])) {
         exit;
         
     } catch (Exception $e) {
-        // Rollback transaction on error
         mysqli_rollback($conn);
         
         $_SESSION['error'] = $e->getMessage();

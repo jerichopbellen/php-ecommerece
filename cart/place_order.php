@@ -14,17 +14,14 @@ $user_id = intval($_SESSION['user_id']);
 $address_id = filter_input(INPUT_POST, 'address_id', FILTER_SANITIZE_STRING) ?? '';
 $payment_method = filter_input(INPUT_POST, 'payment_method', FILTER_SANITIZE_STRING) ?? '';
 
-// Validate required fields
 if (empty($payment_method)) {
     echo "<div class='container py-5'><div class='alert alert-danger'>Missing required fields.</div></div>";
     exit;
 }
 
-// Start transaction
 mysqli_begin_transaction($conn);
 
 try {
-    // Handle new address
     if ($address_id === 'new') {
         $recipient = filter_input(INPUT_POST, 'recipient', FILTER_SANITIZE_STRING) ?? '';
         $street    = filter_input(INPUT_POST, 'street', FILTER_SANITIZE_STRING) ?? '';
@@ -61,7 +58,6 @@ try {
         $address_id = intval($address_id);
     }
 
-    // Create order
     $status = 'Pending';
     $order_sql = "INSERT INTO orders (user_id, address_id, payment_method, status) VALUES (?, ?, ?, ?)";
     $order_stmt = mysqli_prepare($conn, $order_sql);
@@ -70,7 +66,6 @@ try {
     $order_id = mysqli_insert_id($conn);
     mysqli_stmt_close($order_stmt);
 
-    // Fetch cart items
     $cart_sql = "
         SELECT ci.variant_id, ci.quantity, pv.price
         FROM cart_items ci
@@ -82,7 +77,6 @@ try {
     mysqli_stmt_execute($cart_stmt);
     $cart_result = mysqli_stmt_get_result($cart_stmt);
 
-    // Insert order items
     $order_item_sql = "INSERT INTO order_items (order_id, variant_id, quantity, price) VALUES (?, ?, ?, ?)";
     $order_item_stmt = mysqli_prepare($conn, $order_item_sql);
 
@@ -96,17 +90,14 @@ try {
     mysqli_stmt_close($cart_stmt);
     mysqli_stmt_close($order_item_stmt);
 
-    // Clear cart
     $clear_cart_sql = "DELETE FROM cart_items WHERE user_id = ?";
     $clear_cart_stmt = mysqli_prepare($conn, $clear_cart_sql);
     mysqli_stmt_bind_param($clear_cart_stmt, "i", $user_id);
     mysqli_stmt_execute($clear_cart_stmt);
     mysqli_stmt_close($clear_cart_stmt);
 
-    // Commit transaction
     mysqli_commit($conn);
 
-    // Fetch user info with prepared statement
     $user_sql = "SELECT email, first_name FROM users WHERE user_id = ?";
     $user_stmt = mysqli_prepare($conn, $user_sql);
     mysqli_stmt_bind_param($user_stmt, "i", $user_id);
@@ -118,7 +109,6 @@ try {
     $user_email = $user['email'];
     $user_name  = $user['first_name'];
 
-    // Build email content
     $details = buildOrderDetailsHtml($conn, $order_id);
     $meta    = $details['meta'];
     $items   = $details['html'];
@@ -135,16 +125,13 @@ try {
         <p>We will notify you when the status changes.</p>
     ";
 
-    // Send confirmation email
     sendMail($user_email, $user_name, $subject, $body, $mailConfig);
 
-    // Redirect
     $_SESSION['success'] = 'Order placed successfully.';
     header('Location: ../orders/view_orders.php');
     exit();
 
 } catch (Exception $e) {
-    // Rollback transaction on error
     mysqli_rollback($conn);
     $_SESSION['error'] = 'Failed to place order. Please try again.';
     header('Location: ../cart/checkout.php');

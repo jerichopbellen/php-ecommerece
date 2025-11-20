@@ -12,7 +12,6 @@ include '../../includes/config.php';
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 try {
-    // Input sanitization
     $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
     
     if ($id === false || $id === null) {
@@ -21,10 +20,8 @@ try {
         exit;
     }
 
-    // Start transaction
     mysqli_begin_transaction($conn);
 
-    // Check for associated products using prepared statement
     $check_stmt = mysqli_prepare($conn, "SELECT product_id FROM products WHERE brand_id = ? LIMIT 1");
     mysqli_stmt_bind_param($check_stmt, "i", $id);
     mysqli_stmt_execute($check_stmt);
@@ -36,13 +33,11 @@ try {
     }
     mysqli_stmt_close($check_stmt);
 
-    // Delete brand using prepared statement
     $delete_stmt = mysqli_prepare($conn, "DELETE FROM brands WHERE brand_id = ?");
     mysqli_stmt_bind_param($delete_stmt, "i", $id);
     mysqli_stmt_execute($delete_stmt);
     mysqli_stmt_close($delete_stmt);
 
-    // Commit transaction
     mysqli_commit($conn);
 
     $_SESSION['success'] = "Brand deleted successfully.";

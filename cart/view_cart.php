@@ -11,7 +11,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = intval($_SESSION['user_id']);
 
-// Fetch cart items with product & variant info
 $sql = "
     SELECT 
         ci.cart_item_id,
@@ -66,7 +65,6 @@ $result = mysqli_stmt_get_result($stmt);
                             $subtotal = $price * $qty;
                             $total += $subtotal;
 
-                            // Fetch current stock
                             $stock_sql = "SELECT quantity FROM stocks WHERE variant_id = ?";
                             $stock_stmt = mysqli_prepare($conn, $stock_sql);
                             mysqli_stmt_bind_param($stock_stmt, "i", $current_variant_id);
@@ -81,7 +79,6 @@ $result = mysqli_stmt_get_result($stmt);
                                 $checkout_blocked = true;
                             }
 
-                            // Variant dropdown
                             $variant_sql = "SELECT variant_id, color, material, price FROM product_variants WHERE product_id = ?";
                             $variant_stmt = mysqli_prepare($conn, $variant_sql);
                             mysqli_stmt_bind_param($variant_stmt, "i", $product_id);

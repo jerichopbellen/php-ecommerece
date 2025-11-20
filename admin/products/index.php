@@ -29,11 +29,9 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Input sanitization
 $keyword = isset($_GET['search']) ? trim($_GET['search']) : '';
 $keyword = htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8');
 
-// Prepare SQL statement
 $sql = "
     SELECT 
         p.product_id,
@@ -52,7 +50,6 @@ if ($keyword) {
 
 $sql .= " ORDER BY p.name ASC";
 
-// Use prepared statement
 $stmt = mysqli_prepare($conn, $sql);
 
 if ($keyword) {

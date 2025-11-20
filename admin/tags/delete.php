@@ -12,7 +12,6 @@ include '../../includes/config.php';
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 try {
-    // Input sanitization
     if (!isset($_GET['id']) || !filter_var($_GET['id'], FILTER_VALIDATE_INT)) {
         $_SESSION['error'] = "Invalid tag ID.";
         header("Location: index.php");
@@ -21,10 +20,8 @@ try {
     
     $tag_id = intval($_GET['id']);
     
-    // Start transaction
     mysqli_begin_transaction($conn);
     
-    // Check for associated products using prepared statement
     $check_stmt = mysqli_prepare($conn, "SELECT product_id FROM product_tags WHERE tag_id = ? LIMIT 1");
     mysqli_stmt_bind_param($check_stmt, "i", $tag_id);
     mysqli_stmt_execute($check_stmt);
@@ -39,13 +36,11 @@ try {
     }
     mysqli_stmt_close($check_stmt);
 
-    // Delete tag using prepared statement
     $delete_stmt = mysqli_prepare($conn, "DELETE FROM tags WHERE tag_id = ?");
     mysqli_stmt_bind_param($delete_stmt, "i", $tag_id);
     mysqli_stmt_execute($delete_stmt);
     mysqli_stmt_close($delete_stmt);
     
-    // Commit transaction
     mysqli_commit($conn);
 
     $_SESSION['success'] = "Tag deleted successfully.";

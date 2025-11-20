@@ -2,19 +2,16 @@
 session_start();
 include("../includes/config.php");
 
-// Sanitize and validate input
 $first_name   = trim(htmlspecialchars($_POST['first_name'] ?? '', ENT_QUOTES, 'UTF-8'));
 $last_name    = trim(htmlspecialchars($_POST['last_name'] ?? '', ENT_QUOTES, 'UTF-8'));
 $email        = trim($_POST['email'] ?? '');
 $password     = $_POST['password'] ?? '';
 $confirmPass  = $_POST['confirmPass'] ?? '';
 
-// Persist values in session
 $_SESSION['first_name'] = $_POST['first_name'];
 $_SESSION['last_name']  = $_POST['last_name'];
 $_SESSION['email']      = $_POST['email'];
 
-// Validation
 if (!$first_name) {
     $_SESSION['firstNameError'] = 'First name is required.';
     header("Location: register.php"); exit();
@@ -40,7 +37,6 @@ if ($password !== $confirmPass) {
     header("Location: register.php"); exit();
 }
 
-// Check if email already exists
 $emailCheckSql = "SELECT user_id FROM users WHERE email = ?";
 $emailCheckStmt = mysqli_prepare($conn, $emailCheckSql);
 mysqli_stmt_bind_param($emailCheckStmt, 's', $email);
@@ -54,7 +50,6 @@ if (mysqli_stmt_num_rows($emailCheckStmt) > 0) {
 }
 mysqli_stmt_close($emailCheckStmt);
 
-// Handle profile photo upload
 $img_path = null;
 $targetPath = null;
 
@@ -87,14 +82,11 @@ if (isset($_FILES['profile_photo']) && $_FILES['profile_photo']['error'] === UPL
     }
 }
 
-// Begin transaction
 mysqli_begin_transaction($conn);
 
 try {
-    // Hash password (better to use password_hash, but keeping sha1 for consistency)
     $hashed_password = sha1($password);
 
-    // Insert user
     $sql = "INSERT INTO users (first_name, last_name, email, password_hash, img_path) VALUES (?, ?, ?, ?, ?)";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, 'sssss', $first_name, $last_name, $email, $hashed_password, $img_path);
@@ -106,7 +98,6 @@ try {
     $userId = mysqli_insert_id($conn);
     mysqli_stmt_close($stmt);
 
-    // Fetch role
     $roleQuery = "SELECT role FROM users WHERE user_id = ?";
     $roleStmt = mysqli_prepare($conn, $roleQuery);
     mysqli_stmt_bind_param($roleStmt, 'i', $userId);
@@ -115,15 +106,12 @@ try {
     $roleData = mysqli_fetch_assoc($roleResult);
     mysqli_stmt_close($roleStmt);
 
-    // Commit transaction
     mysqli_commit($conn);
 
-    // Clear session values after success
     foreach (['first_name','last_name','email'] as $field) {
         unset($_SESSION[$field]);
     }
 
-    // Set session
     $_SESSION['user_id'] = $userId;
     $_SESSION['email']   = $email;
     $_SESSION['role']    = $roleData['role'] ?? 'user';
@@ -135,7 +123,6 @@ try {
 } catch (Exception $e) {
     mysqli_rollback($conn);
 
-    // Delete uploaded file if exists
     if ($img_path && $targetPath && file_exists($targetPath)) {
         unlink($targetPath);
     }

@@ -29,11 +29,10 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Sanitize output for pre-filled values (XSS prevention)
 $name = '';
 if (isset($_SESSION['old_input']['name'])) {
     $name = htmlspecialchars(trim($_SESSION['old_input']['name']), ENT_QUOTES, 'UTF-8');
-    unset($_SESSION['old_input']); // Clear old input after using
+    unset($_SESSION['old_input']); 
 }
 ?>
 

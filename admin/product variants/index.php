@@ -29,10 +29,8 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Input sanitization
 $keyword = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-// Prepared statement for SELECT query
 $sql = "
     SELECT 
         p.name AS product_name,

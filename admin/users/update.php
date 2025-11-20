@@ -10,22 +10,18 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 include '../../includes/config.php';
 
-// Input sanitization
 $user_id = filter_input(INPUT_POST, 'user_id', FILTER_VALIDATE_INT);
 $role = filter_input(INPUT_POST, 'role', FILTER_SANITIZE_STRING);
 
-// Validate inputs
 if ($user_id === false || $user_id === null || empty($role)) {
     $_SESSION['error'] = "Invalid input data.";
     header("Location: index.php");
     exit;
 }
 
-// Begin transaction
 mysqli_begin_transaction($conn);
 
 try {
-    // Prepared statement
     $stmt = mysqli_prepare($conn, "UPDATE users SET role = ? WHERE user_id = ?");
     mysqli_stmt_bind_param($stmt, "si", $role, $user_id);
     $result = mysqli_stmt_execute($stmt);

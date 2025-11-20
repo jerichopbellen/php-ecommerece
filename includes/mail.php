@@ -1,5 +1,4 @@
 <?php
-// PHPMailer manual includes
 require __DIR__ . '/phpmailer/src/PHPMailer.php';
 require __DIR__ . '/phpmailer/src/SMTP.php';
 require __DIR__ . '/phpmailer/src/Exception.php';
@@ -19,7 +18,6 @@ $mailConfig = [
 function sendMail(string $toEmail, string $toName, string $subject, string $bodyHtml, array $mailConfig): bool {
     $mail = new PHPMailer(true);
     try {
-        // Server settings
         $mail->isSMTP();
         $mail->Host       = $mailConfig['host'];
         $mail->SMTPAuth   = true;
@@ -27,11 +25,9 @@ function sendMail(string $toEmail, string $toName, string $subject, string $body
         $mail->Password   = $mailConfig['password'];
         $mail->Port       = $mailConfig['port'];
 
-        // Recipients
         $mail->setFrom($mailConfig['from_email'], $mailConfig['from_name']);
         $mail->addAddress($toEmail, $toName);
 
-        // Content
         $mail->isHTML(true);
         $mail->Subject = $subject;
         $mail->Body    = $bodyHtml;

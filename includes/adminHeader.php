@@ -10,7 +10,6 @@
     <link href="includes/style/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-    <!-- Admin Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top border-bottom border-secondary px-4">
   <div class="container-fluid">
     <a class="navbar-brand fw-semibold text-warning" href="#">
@@ -43,10 +42,8 @@
 </nav>
 
     <div class="container mt-4">
-        <!-- Admin content goes here -->
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

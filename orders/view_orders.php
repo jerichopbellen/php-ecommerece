@@ -9,13 +9,11 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Input sanitization
 $user_id = filter_var($_SESSION['user_id'], FILTER_VALIDATE_INT);
 if ($user_id === false) {
     die("Invalid user ID");
 }
 
-// Fetch orders 
 $order_sql = "SELECT * FROM orders WHERE user_id = ? AND status != 'Cancelled' AND status != 'Received' ORDER BY created_at DESC";
 $order_stmt = mysqli_prepare($conn, $order_sql);
 if (!$order_stmt) {

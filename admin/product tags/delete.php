@@ -11,7 +11,6 @@ include '../../includes/config.php';
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 try {
-    // Validate input
     if (!isset($_GET['product_id']) || !is_numeric($_GET['product_id']) ||
         !isset($_GET['tag_id']) || !is_numeric($_GET['tag_id'])) {
         throw new Exception("Invalid product or tag ID.");
@@ -22,7 +21,6 @@ try {
 
     mysqli_begin_transaction($conn);
 
-    // Delete specific product-tag link
     $stmt = $conn->prepare("DELETE FROM product_tags WHERE product_id = ? AND tag_id = ?");
     $stmt->bind_param("ii", $product_id, $tag_id);
     $stmt->execute();

@@ -9,15 +9,12 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 include '../../includes/config.php';
 
-// Input sanitization
 $product_id = filter_input(INPUT_POST, 'product_id', FILTER_VALIDATE_INT);
 $tag_id     = filter_input(INPUT_POST, 'tag_id', FILTER_VALIDATE_INT);
 
-// Persist values in session
 $_SESSION['product_id'] = $_POST['product_id'];
 $_SESSION['tag_id']     = $_POST['tag_id'];
 
-// Validation
 if (!$product_id) {
     $_SESSION['productError'] = "Please select a valid product.";
     header("Location: create.php"); exit();
@@ -27,7 +24,6 @@ if (!$tag_id) {
     header("Location: create.php"); exit();
 }
 
-// Start transaction
 mysqli_begin_transaction($conn);
 
 try {
@@ -39,7 +35,6 @@ try {
     if ($result) {
         mysqli_commit($conn);
 
-        // Clear session values after success
         foreach (['product_id','tag_id'] as $field) {
             unset($_SESSION[$field]);
         }

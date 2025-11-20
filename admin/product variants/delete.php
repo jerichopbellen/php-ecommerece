@@ -11,7 +11,6 @@ include '../../includes/config.php';
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-// Input sanitization
 if (!isset($_GET['id']) || !filter_var($_GET['id'], FILTER_VALIDATE_INT) || $_GET['id'] <= 0) {
     $_SESSION['error'] = "Invalid variant ID.";
     header("Location: index.php");
@@ -21,10 +20,8 @@ if (!isset($_GET['id']) || !filter_var($_GET['id'], FILTER_VALIDATE_INT) || $_GE
 $variant_id = (int)$_GET['id'];
 
 try {
-    // Start transaction
     mysqli_begin_transaction($conn);
     
-    // Check for existing orders using prepared statement
     $check_stmt = mysqli_prepare($conn, "SELECT order_items_id FROM order_items WHERE variant_id = ? LIMIT 1");
     mysqli_stmt_bind_param($check_stmt, "i", $variant_id);
     mysqli_stmt_execute($check_stmt);
@@ -39,13 +36,11 @@ try {
     }
     mysqli_stmt_close($check_stmt);
 
-    // Delete variant using prepared statement
     $delete_stmt = mysqli_prepare($conn, "DELETE FROM product_variants WHERE variant_id = ?");
     mysqli_stmt_bind_param($delete_stmt, "i", $variant_id);
     mysqli_stmt_execute($delete_stmt);
     mysqli_stmt_close($delete_stmt);
 
-    // Commit transaction
     mysqli_commit($conn);
 
     $_SESSION['success'] = "Product variant deleted successfully.";

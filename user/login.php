@@ -9,12 +9,10 @@ if (isset($_SESSION['user_id'])) {
 }
 
 if (isset($_POST['submit'])) {
-    // Input sanitization
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
     $email = filter_var($email, FILTER_VALIDATE_EMAIL);
     $pass  = sha1(trim($_POST['password']));
 
-    // Persist values in session for repopulation
     $_SESSION['email_input'] = $_POST['email'];
 
     if (!$email) {
@@ -29,7 +27,6 @@ if (isset($_POST['submit'])) {
         exit();
     }
 
-    // Begin transaction
     mysqli_begin_transaction($conn);
 
     try {
@@ -51,7 +48,6 @@ if (isset($_POST['submit'])) {
         if (mysqli_stmt_num_rows($stmt) === 1) {
             mysqli_stmt_fetch($stmt);
 
-            // Restrict login if account is inactive
             if ((int)$is_active === 0) {
                 mysqli_stmt_close($stmt);
                 mysqli_commit($conn);
@@ -60,7 +56,6 @@ if (isset($_POST['submit'])) {
                 exit();
             }
 
-            // Allow login
             $_SESSION['email']   = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
             $_SESSION['user_id'] = (int)$user_id;
             $_SESSION['role']    = $role;
@@ -68,7 +63,6 @@ if (isset($_POST['submit'])) {
             mysqli_stmt_close($stmt);
             mysqli_commit($conn);
 
-            // Clear persisted input
             unset($_SESSION['email_input']);
 
             header("Location: ../index.php");

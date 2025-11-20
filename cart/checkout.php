@@ -11,11 +11,9 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = intval($_SESSION['user_id']);
 
-// Start transaction
 mysqli_begin_transaction($conn);
 
 try {
-    // Fetch cart items with product & variant info
     $sql = "
         SELECT 
             ci.cart_item_id,
@@ -39,7 +37,6 @@ try {
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
 
-    // Calculate total
     $total = 0;
     $cart_items = [];
     while ($row = mysqli_fetch_assoc($result)) {
@@ -50,7 +47,6 @@ try {
     }
     mysqli_stmt_close($stmt);
 
-    // Fetch saved addresses
     $addresses = [];
     $address_sql = "SELECT * FROM addresses WHERE user_id = ?";
     $address_stmt = mysqli_prepare($conn, $address_sql);
@@ -65,7 +61,6 @@ try {
     }
     mysqli_stmt_close($address_stmt);
 
-    // Commit transaction
     mysqli_commit($conn);
 
 } catch (Exception $e) {
@@ -82,7 +77,6 @@ try {
         <div class="alert alert-info text-center">Your cart is empty. <a href="../index.php">Go shopping</a></div>
     <?php else: ?>
         <div class="row g-4">
-            <!-- Cart Summary -->
             <div class="col-md-6">
                 <div class="card shadow-sm">
                     <div class="card-body">
@@ -133,7 +127,6 @@ try {
                 </div>
             </div>
 
-            <!-- Checkout Form -->
             <div class="col-md-6">
                 <div class="card shadow-sm">
                     <div class="card-body">
@@ -163,7 +156,6 @@ try {
                                 </select>
                             </div>
 
-                            <!-- New Address Fields -->
                             <div id="new_address_form" style="display:none;">
                                 <div class="row g-3">
                                     <div class="col-md-6">

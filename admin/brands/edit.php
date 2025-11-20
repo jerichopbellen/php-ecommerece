@@ -29,7 +29,6 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Input sanitization
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
 if ($id === false || $id === null) {
@@ -38,7 +37,6 @@ if ($id === false || $id === null) {
   exit;
 }
 
-// Prepared statement
 $stmt = mysqli_prepare($conn, "SELECT * FROM brands WHERE brand_id = ?");
 mysqli_stmt_bind_param($stmt, "i", $id);
 mysqli_stmt_execute($stmt);

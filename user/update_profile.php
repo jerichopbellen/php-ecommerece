@@ -9,7 +9,6 @@ if (!$userId) {
     exit();
 }
 
-// Update profile info
 if (isset($_POST['submit_profile'])) {
     $fname = htmlspecialchars(trim($_POST['fname'] ?? ''), ENT_QUOTES, 'UTF-8');
     $lname = htmlspecialchars(trim($_POST['lname'] ?? ''), ENT_QUOTES, 'UTF-8');
@@ -33,7 +32,6 @@ if (isset($_POST['submit_profile'])) {
         header("Location: profile.php"); exit();
     }
 
-    // Check if email already exists for ANY user
     $check_sql = "SELECT user_id FROM users WHERE email = ?";
     $check_stmt = mysqli_prepare($conn, $check_sql);
     mysqli_stmt_bind_param($check_stmt, 's', $email);
@@ -45,7 +43,6 @@ if (isset($_POST['submit_profile'])) {
         mysqli_stmt_fetch($check_stmt);
         mysqli_stmt_close($check_stmt);
 
-        // Only allow if it's the current user's own email
         if ($existing_user_id != $userId) {
             $_SESSION['emailError'] = 'Email is already in use by another account.';
             header("Location: profile.php"); exit();
@@ -54,7 +51,6 @@ if (isset($_POST['submit_profile'])) {
         mysqli_stmt_close($check_stmt);
     }
 
-    // Update query
     $sql = "UPDATE users SET first_name = ?, last_name = ?, email = ? WHERE user_id = ?";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, 'sssi', $fname, $lname, $email, $userId);
@@ -71,7 +67,6 @@ if (isset($_POST['submit_profile'])) {
 if (isset($_POST['remove_avatar'])) {
     $defaultPath = "/Furnitures/user/avatars/default-avatar.png";
 
-    // Check current avatar
     $check_sql = "SELECT img_path FROM users WHERE user_id = ?";
     $check_stmt = mysqli_prepare($conn, $check_sql);
     mysqli_stmt_bind_param($check_stmt, 'i', $userId);
@@ -81,10 +76,8 @@ if (isset($_POST['remove_avatar'])) {
     mysqli_stmt_close($check_stmt);
 
     if ($row && $row['img_path'] === $defaultPath) {
-        // Already default avatar
         $_SESSION['info'] = 'You do not have a profile picture to remove.';
     } else {
-        // Reset to default
         $sql = "UPDATE users SET img_path = ? WHERE user_id = ?";
         $stmt = mysqli_prepare($conn, $sql);
         mysqli_stmt_bind_param($stmt, 'si', $defaultPath, $userId);
@@ -98,7 +91,6 @@ if (isset($_POST['remove_avatar'])) {
     exit();
 }
 
-// Change password
 if (isset($_POST['submit_password'])) {
     $current = sha1(trim($_POST['current_password'] ?? ''));
     $new     = trim($_POST['new_password'] ?? '');
@@ -114,7 +106,6 @@ if (isset($_POST['submit_password'])) {
         header("Location: profile.php"); exit();
     }
 
-    // Verify current password
     $check_sql = "SELECT user_id FROM users WHERE user_id = ? AND password_hash = ?";
     $check_stmt = mysqli_prepare($conn, $check_sql);
     mysqli_stmt_bind_param($check_stmt, 'is', $userId, $current);
@@ -122,10 +113,9 @@ if (isset($_POST['submit_password'])) {
     mysqli_stmt_store_result($check_stmt);
 
     if (mysqli_stmt_num_rows($check_stmt) === 1) {
-        // Update password
         $update_sql = "UPDATE users SET password_hash = ? WHERE user_id = ?";
         $update_stmt = mysqli_prepare($conn, $update_sql);
-        $hashed_new = sha1($new); // consider password_hash() for stronger security
+        $hashed_new = sha1($new);
         mysqli_stmt_bind_param($update_stmt, 'si', $hashed_new, $userId);
         mysqli_stmt_execute($update_stmt);
         mysqli_stmt_close($update_stmt);
@@ -141,7 +131,6 @@ if (isset($_POST['submit_password'])) {
     exit();
 }
 
-// Upload profile picture
 if (isset($_POST['submit_avatar'])) {
     if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
         $allowedTypes = ['image/png', 'image/jpg', 'image/jpeg'];
@@ -149,9 +138,8 @@ if (isset($_POST['submit_avatar'])) {
 
         if (in_array($file['type'], $allowedTypes)) {
             $source = $file['tmp_name'];
-            // Sanitize filename
             $filename = preg_replace('/[^a-zA-Z0-9._-]/', '', basename($file['name']));
-            $filename = uniqid('avatar_', true) . '_' . $filename; // unique prefix
+            $filename = uniqid('avatar_', true) . '_' . $filename; 
             $targetDir = __DIR__ . "/avatars/";
             $target = $targetDir . $filename;
             $path = "/Furnitures/user/avatars/" . $filename;
@@ -182,7 +170,6 @@ if (isset($_POST['submit_avatar'])) {
     exit();
 }
 
-// Add new address
 if (isset($_POST['submit_address'])) {
     $recipient = htmlspecialchars(trim($_POST['recipient'] ?? ''), ENT_QUOTES, 'UTF-8');
     $street    = htmlspecialchars(trim($_POST['street'] ?? ''), ENT_QUOTES, 'UTF-8');
@@ -193,7 +180,6 @@ if (isset($_POST['submit_address'])) {
     $country   = htmlspecialchars(trim($_POST['country'] ?? ''), ENT_QUOTES, 'UTF-8');
     $phone     = htmlspecialchars(trim($_POST['phone'] ?? ''), ENT_QUOTES, 'UTF-8');
 
-    // Persist values in session
     $_SESSION['recipient'] = $_POST['recipient'];
     $_SESSION['street']    = $_POST['street'];
     $_SESSION['barangay']  = $_POST['barangay'];
@@ -203,7 +189,6 @@ if (isset($_POST['submit_address'])) {
     $_SESSION['country']   = $_POST['country'];
     $_SESSION['phone']     = $_POST['phone'];
 
-    // Validation
     if ($recipient === '') { $_SESSION['recipientError'] = 'Recipient name is required.'; header("Location: profile.php"); exit(); }
     if ($phone === '' || !ctype_digit($phone)) { $_SESSION['phoneError'] = 'Phone must not be empty and must contain numbers only.'; header("Location: profile.php"); exit(); }
     if ($street === '') { $_SESSION['streetError'] = 'Street is required.'; header("Location: profile.php"); exit(); }
@@ -213,7 +198,6 @@ if (isset($_POST['submit_address'])) {
     if ($zipcode === '' || !ctype_digit($zipcode)) { $_SESSION['zipcodeError'] = 'Zipcode must not be empty and must contain numbers only.'; header("Location: profile.php"); exit(); }
     if ($country === '') { $_SESSION['countryError'] = 'Country is required.'; header("Location: profile.php"); exit(); }
 
-    // Insert into DB
     $sql = "INSERT INTO addresses 
             (recipient, street, barangay, city, province, zipcode, country, phone, user_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -223,7 +207,6 @@ if (isset($_POST['submit_address'])) {
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
 
-    // Clear session values after success
     foreach (['recipient','street','barangay','city','province','zipcode','country','phone'] as $field) {
         unset($_SESSION[$field]);
     }
@@ -233,14 +216,12 @@ if (isset($_POST['submit_address'])) {
     exit();
 }
 
-// Delete address
 if (isset($_GET['delete_address'])) {
     $addressId = (int) $_GET['delete_address'];
 
     mysqli_begin_transaction($conn);
 
     try {
-        // Check if this address is linked to any active orders
         $check_sql = "
             SELECT 1 
             FROM orders 
@@ -263,7 +244,6 @@ if (isset($_GET['delete_address'])) {
         }
         mysqli_stmt_close($check_stmt);
 
-        // Safe to delete
         $sql = "DELETE FROM addresses WHERE address_id = ? AND user_id = ?";
         $stmt = mysqli_prepare($conn, $sql);
         mysqli_stmt_bind_param($stmt, 'ii', $addressId, $userId);
@@ -282,6 +262,5 @@ if (isset($_GET['delete_address'])) {
     exit();
 }
 
-// Fallback
 header("Location: profile.php");
 exit();

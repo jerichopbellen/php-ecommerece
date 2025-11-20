@@ -29,7 +29,6 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Sanitize any GET parameters if they exist (for pre-filling form on error)
 $name = '';
 if (isset($_GET['name'])) {
     $name = htmlspecialchars(trim($_GET['name']), ENT_QUOTES, 'UTF-8');

@@ -15,23 +15,19 @@ $variant_id = filter_input(INPUT_POST, 'variant_id', FILTER_VALIDATE_INT);
 $rating     = filter_input(INPUT_POST, 'rating', FILTER_VALIDATE_INT);
 $comment    = isset($_POST['comment']) ? trim($_POST['comment']) : '';
 
-// Validate inputs
 if (!$product_id || !$order_id || !$variant_id || !$rating || $rating < 1 || $rating > 5) {
     $_SESSION['error'] = "Invalid input data.";
     header("Location: order_history.php");
     exit;
 }
 
-// Sanitize comment
 $comment = htmlspecialchars($comment, ENT_QUOTES, 'UTF-8');
 
-//Define foul words list
 $badWords = [
     'fuck', 'shit', 'bitch', 'asshole', 'bastard', 'damn', 'crap',
     'tangina', 'putangina', 'bobo', 'tanga', 'gago', 'ulol'
 ];
 
-// Apply regex masking (case-insensitive with /i flag)
 foreach ($badWords as $word) {
     $pattern = '/\b' . preg_quote($word, '/') . '\b/i';
     $comment = preg_replace_callback($pattern, function($matches) {
@@ -39,11 +35,9 @@ foreach ($badWords as $word) {
     }, $comment);
 }
 
-// Start transaction
 mysqli_begin_transaction($conn);
 
 try {
-    // Verify user owns this order
     $verify_stmt = mysqli_prepare($conn, "
         SELECT order_id FROM orders 
         WHERE order_id = ? AND user_id = ? AND status = 'Received'
@@ -57,7 +51,6 @@ try {
     }
     mysqli_stmt_close($verify_stmt);
 
-    // Insert review
     $stmt = mysqli_prepare($conn, "
         INSERT INTO reviews (user_id, product_id, variant_id, rating, comment)
         VALUES (?, ?, ?, ?, ?)
@@ -69,7 +62,6 @@ try {
     }
     mysqli_stmt_close($stmt);
 
-    // Commit transaction
     mysqli_commit($conn);
     
     $_SESSION['success'] = "Thank you! Your review has been submitted.";
@@ -77,7 +69,6 @@ try {
     exit;
 
 } catch (Exception $e) {
-    // Rollback on error
     mysqli_rollback($conn);
     $_SESSION['error'] = $e->getMessage();
     header("Location: order_history.php");

@@ -10,17 +10,14 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 
-// Input sanitization
 $user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;
 
-// Validate user_id
 if ($user_id <= 0) {
     echo "<div class='container my-5'><div class='alert alert-danger'>Invalid user ID.</div></div>";
     include '../../includes/footer.php';
     exit;
 }
 
-// Prepared statement for query
 $sql = "
     SELECT 
         o.order_id,

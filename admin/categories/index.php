@@ -29,11 +29,9 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Input sanitization
 $keyword = isset($_GET['search']) ? trim($_GET['search']) : '';
 $keyword = filter_var($keyword, FILTER_SANITIZE_STRING);
 
-// Prepared statement for secure query
 if ($keyword !== '') {
     $sql = "
         SELECT 

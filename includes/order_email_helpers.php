@@ -1,6 +1,5 @@
 <?php
 function buildOrderDetailsHtml(mysqli $conn, int $orderId): array {
-    // Input sanitization - ensure positive integer
     $orderId = max(1, intval($orderId));
     
     $stmt = $conn->prepare("
@@ -54,7 +53,6 @@ function buildOrderDetailsHtml(mysqli $conn, int $orderId): array {
     
     $stmt->close();
 
-    // If no rows, return minimal content
     if ($meta === null) {
         return [
             'meta' => ['order_id' => $orderId, 'status' => null],
@@ -63,7 +61,6 @@ function buildOrderDetailsHtml(mysqli $conn, int $orderId): array {
         ];
     }
 
-    // Build HTML table - data already sanitized above
     $html = "<table border='1' cellpadding='8' cellspacing='0' style='border-collapse:collapse;width:100%;'>
         <thead style='background:#f6f6f6;'>
             <tr>
@@ -107,6 +104,5 @@ function buildAddressBlock(array $m): string {
         $m['province'] ?? null,
         $m['zipcode'] ?? null,
     ]);
-    // Data should already be sanitized, but ensure safe output
     return htmlspecialchars(implode(', ', $parts), ENT_QUOTES, 'UTF-8');
 }

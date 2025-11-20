@@ -10,13 +10,11 @@ if (!isset($_POST['cart_item_id'], $_POST['action'], $_POST['product_qty'])) {
     die('Missing required data.');
 }
 
-// Input sanitization
 $user_id = (int) $_SESSION['user_id'];
 $cart_item_id = filter_var($_POST['cart_item_id'], FILTER_VALIDATE_INT);
 $current_qty = filter_var($_POST['product_qty'], FILTER_VALIDATE_INT);
 $action = trim($_POST['action']);
 
-// Validate inputs
 if ($cart_item_id === false || $current_qty === false || $current_qty < 1) {
     die('Invalid input data.');
 }
@@ -33,9 +31,7 @@ if ($action === 'increase') {
     $new_qty = $current_qty - 1;
 }
 
-// Only update if quantity actually changed
 if ($new_qty !== $current_qty) {
-    // Start transaction
     mysqli_begin_transaction($conn);
     
     try {
@@ -54,17 +50,14 @@ if ($new_qty !== $current_qty) {
         
         mysqli_stmt_close($stmt);
         
-        // Commit transaction
         mysqli_commit($conn);
         
     } catch (Exception $e) {
-        // Rollback on error
         mysqli_rollback($conn);
         die($e->getMessage());
     }
 }
 
-// Redirect back to cart view
 header('Location: view_cart.php');
 exit;
 ?>

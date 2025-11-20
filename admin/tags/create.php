@@ -29,7 +29,6 @@ include '../../includes/config.php';
 include '../../includes/adminHeader.php';
 include '../../includes/alert.php';
 
-// Sanitize previous input if exists
 $oldName = isset($_SESSION['old_name']) ? htmlspecialchars($_SESSION['old_name'], ENT_QUOTES, 'UTF-8') : '';
 unset($_SESSION['old_name']);
 

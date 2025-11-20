@@ -10,21 +10,18 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 include '../../includes/config.php';
 
 if (isset($_POST['submit'])) {
-    // Sanitize inputs
     $product_id = filter_var(trim($_POST['product'] ?? ''), FILTER_VALIDATE_INT);
     $color      = htmlspecialchars(trim($_POST['color'] ?? ''), ENT_QUOTES, 'UTF-8');
     $material   = htmlspecialchars(trim($_POST['material'] ?? ''), ENT_QUOTES, 'UTF-8');
     $price      = filter_var(trim($_POST['price'] ?? ''), FILTER_VALIDATE_FLOAT);
     $quantity   = filter_var(trim($_POST['quantity'] ?? ''), FILTER_VALIDATE_INT);
 
-    // Persist values in session for repopulation
     $_SESSION['product']  = $_POST['product'];
     $_SESSION['color']    = $_POST['color'];
     $_SESSION['material'] = $_POST['material'];
     $_SESSION['price']    = $_POST['price'];
     $_SESSION['quantity'] = $_POST['quantity'];
 
-    // Validation
     if ($product_id === false) {
         $_SESSION['productError'] = "Please select a valid product.";
         header("Location: create.php");
@@ -49,11 +46,9 @@ if (isset($_POST['submit'])) {
         exit;
     }
 
-    // Transaction
     mysqli_begin_transaction($conn);
 
     try {
-        // Insert variant
         $stmt1 = $conn->prepare("INSERT INTO product_variants (color, material, price, product_id) VALUES (?, ?, ?, ?)");
         $stmt1->bind_param("ssdi", $color, $material, $price, $product_id);
         if (!$stmt1->execute()) {
@@ -62,7 +57,6 @@ if (isset($_POST['submit'])) {
         $variant_id = $conn->insert_id;
         $stmt1->close();
 
-        // Insert stock
         $stmt2 = $conn->prepare("INSERT INTO stocks (quantity, variant_id) VALUES (?, ?)");
         $stmt2->bind_param("ii", $quantity, $variant_id);
         if (!$stmt2->execute()) {
@@ -72,7 +66,6 @@ if (isset($_POST['submit'])) {
 
         mysqli_commit($conn);
 
-        // Clear session values after success
         foreach (['product','color','material','price','quantity'] as $field) {
             unset($_SESSION[$field]);
         }

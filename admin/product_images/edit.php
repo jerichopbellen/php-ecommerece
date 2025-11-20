@@ -29,7 +29,6 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// Input sanitization
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
 if (!$id || $id <= 0) {
@@ -38,7 +37,6 @@ if (!$id || $id <= 0) {
   exit;
 }
 
-// Prepared statement
 $stmt = mysqli_prepare($conn, "
   SELECT 
     i.image_id, 

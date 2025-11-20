@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = intval($_SESSION['user_id']);
 
 if (!empty($_POST['variant_id']) && is_array($_POST['variant_id'])) {
-    // Start transaction
     mysqli_begin_transaction($conn);
     
     try {
@@ -21,13 +20,11 @@ if (!empty($_POST['variant_id']) && is_array($_POST['variant_id'])) {
         }
         
         foreach ($_POST['variant_id'] as $cart_item_id => $variant_id) {
-            // Input sanitization
             $variant_id = intval($variant_id);
             $cart_item_id = intval($cart_item_id);
             
-            // Validate positive integers
             if ($variant_id <= 0 || $cart_item_id <= 0) {
-                continue; // Skip invalid entries
+                continue; 
             }
             
             mysqli_stmt_bind_param($stmt, "iii", $variant_id, $cart_item_id, $user_id);
@@ -39,11 +36,9 @@ if (!empty($_POST['variant_id']) && is_array($_POST['variant_id'])) {
         
         mysqli_stmt_close($stmt);
         
-        // Commit transaction
         mysqli_commit($conn);
         
     } catch (Exception $e) {
-        // Rollback on error
         mysqli_rollback($conn);
         error_log("Cart update error: " . $e->getMessage());
         die("An error occurred while updating cart.");

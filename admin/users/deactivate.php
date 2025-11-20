@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 require_once '../../includes/config.php';
 
-// Check if user ID is provided and sanitize
 if (!isset($_GET['id']) || !filter_var($_GET['id'], FILTER_VALIDATE_INT)) {
     $_SESSION['error'] = "Invalid user ID provided";
     header('Location: index.php');
@@ -19,7 +18,6 @@ if (!isset($_GET['id']) || !filter_var($_GET['id'], FILTER_VALIDATE_INT)) {
 $user_id = (int)$_GET['id'];
 
 try {
-    // Start transaction
     $conn->begin_transaction();
 
     $stmt = $conn->prepare("UPDATE users SET is_active = 0 WHERE user_id = ?");

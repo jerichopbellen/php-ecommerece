@@ -7,7 +7,6 @@ if (!isset($_SESSION['user_id']) || !isset($_POST['order_id'])) {
     exit;
 }
 
-// Input sanitization
 $order_id = filter_input(INPUT_POST, 'order_id', FILTER_VALIDATE_INT);
 $user_id = filter_var($_SESSION['user_id'], FILTER_VALIDATE_INT);
 

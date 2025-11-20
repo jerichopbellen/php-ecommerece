@@ -10,15 +10,12 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 include '../../includes/config.php';
 
 if (isset($_POST['submit'])) {
-    // Sanitize inputs
     $product  = filter_var(trim($_POST['product']), FILTER_VALIDATE_INT);
     $alt_text = htmlspecialchars(trim($_POST['alt-text']), ENT_QUOTES, 'UTF-8');
 
-    // Persist values in session
     $_SESSION['product']   = $_POST['product'];
     $_SESSION['alt-text']  = $_POST['alt-text'];
 
-    // Validation
     if ($product === false) {
         $_SESSION['productError'] = "Please select a valid product.";
         header("Location: create.php");
@@ -85,7 +82,6 @@ if (isset($_POST['submit'])) {
 
         mysqli_commit($conn);
 
-        // Clear session values
         foreach (['product','alt-text'] as $field) {
             unset($_SESSION[$field]);
         }

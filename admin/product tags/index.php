@@ -29,16 +29,13 @@ include '../../includes/adminHeader.php';
 include '../../includes/config.php';
 include '../../includes/alert.php';
 
-// ✅ Input sanitization for tag filter
 $selectedTag = isset($_GET['tag']) ? filter_var($_GET['tag'], FILTER_VALIDATE_INT) : 0;
 $selectedTag = ($selectedTag !== false && $selectedTag >= 0) ? $selectedTag : 0;
 
-// ✅ Fetch all tags for dropdown using prepared statement
 $tagsStmt = mysqli_prepare($conn, "SELECT tag_id, name FROM tags ORDER BY name");
 mysqli_stmt_execute($tagsStmt);
 $tagsResult = mysqli_stmt_get_result($tagsStmt);
 
-// ✅ Build query with prepared statement for optional tag filter
 if ($selectedTag > 0) {
     $sql = "
         SELECT 

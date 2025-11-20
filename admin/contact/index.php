@@ -10,7 +10,6 @@ include '../../includes/config.php';
 include '../../includes/adminHeader.php';
 include '../../includes/alert.php';
 
-// ✅ Input sanitization for filter parameter
 $replyFilter = isset($_GET['reply']) ? trim($_GET['reply']) : 'all';
 // Whitelist allowed values
 $allowedFilters = ['all', 'replied', 'notyet'];
@@ -18,7 +17,6 @@ if (!in_array($replyFilter, $allowedFilters)) {
     $replyFilter = 'all';
 }
 
-// ✅ Build query with prepared statement
 $sql = "SELECT * FROM contact_messages";
 $types = "";
 $params = [];
@@ -31,7 +29,6 @@ if ($replyFilter === 'replied') {
 
 $sql .= " ORDER BY submitted_at DESC";
 
-// ✅ Use prepared statement
 $stmt = mysqli_prepare($conn, $sql);
 if (!$stmt) {
     die("Error preparing statement: " . mysqli_error($conn));
@@ -47,7 +44,6 @@ $count = mysqli_num_rows($result);
         <h3 class="mb-0"><i class="bi bi-inbox me-2"></i>Contact Messages</h3>
     </div>
 
-    <!-- ✅ Reply Filter Form -->
     <form method="GET" class="mb-4">
         <div class="row g-2">
             <div class="col-md-3">
@@ -90,7 +86,6 @@ $count = mysqli_num_rows($result);
                                     <?php else: ?>
                                         <form action="reply_contact.php" method="POST">
                                             <textarea name="reply" class="form-control mb-2" rows="3" required></textarea>
-                                            <!-- ✅ ID sanitization -->
                                             <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
                                             <button type="submit" class="btn btn-sm btn-outline-primary">Send Reply</button>
                                         </form>
